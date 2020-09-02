@@ -342,6 +342,25 @@ int findKeyInSortedArray(vector<int> &sortedArray, int value)
     return -1;
 }
 
+//Binary search sqrt(A)
+int sqrt_binarySearch(int A)
+{
+    if (A == 0) return 0;
+    int low = 1;
+    int high = A;
+
+    while (low < high)
+    {
+        long long mid = low + (high - low + 1) / 2;
+        if (mid * mid == A)
+            return mid;
+        if (mid * mid < A)
+            low = mid + 1;
+        else
+            high = mid - 1;
+    }
+    return low;
+}
 //Problems
 /* Painter Partition problem: minimum time to finish painting.
  * Binary search in rotated array
@@ -431,8 +450,8 @@ pair<int, int> treeDepthAndDiameter(TreeNode* root) {
     pair<int, int> left = treeDepthAndDiameter(root->left);
     pair<int, int> right = treeDepthAndDiameter(root->right);
 
-    int maxdiameter = max({ left.second, right.second, left.first + right.first + 1 });
     int maxdepth = max(left.first, right.first) + 1;
+    int maxdiameter = max({ left.second, right.second, maxdepth });
 
     return { maxdepth , maxdiameter };
 }
@@ -679,8 +698,11 @@ long long nCk(int n, int k)
     return numerator / denominator;
 }
 
-
 int main()
-{
+{  
     std::cout << "Hello World!\n";
+
+
+    int x;
+    cin >> x;
 } 
