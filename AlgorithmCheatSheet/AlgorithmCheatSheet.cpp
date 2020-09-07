@@ -107,32 +107,31 @@ struct LinkedList
 class Trie {
     unordered_map<char, Trie*> children;
     bool isCompleteWord;
+    int frequency;
     Trie()
     {
+        frequency = 0;
         isCompleteWord = false;
     }
     void addWord(string word) 
     {
+        if (word.empty()) return;
         Trie* current = this;
-        for (size_t i = 0; i < word.size(); i++)
-        {
-            char c = word[i];
-            if (current->children.find(c) == current->children.end())
-            {
-                Trie* n = new Trie();
-                current->children.insert({ c, n });
-            }
-            current = current->children[c];
-            if (i == word.size() - 1)
-                current->isCompleteWord = true;
+        for (char c : word)
+        { 
+            current->frequency++;
+            if (current->children.find(c) == current->children.end()) 
+                current->children[c] = new Trie(); 
+
+            current = current->children[c]; 
         }
+        current->isCompleteWord = true;
     }
     bool isPrefix(string pref)
     {
         Trie* current = this;
-        for (size_t i = 0; i < pref.size(); i++)
-        {
-            char c = pref[i];
+        for (char c : pref)
+        { 
             if (current->children.find(c) == current->children.end())
                 return false;
             current = current->children[c];
@@ -142,9 +141,8 @@ class Trie {
     bool hasWord(string word)
     {
         Trie* current = this;
-        for (size_t i = 0; i < word.size(); i++)
-        {
-            char c = word[i];
+        for (char c : word)
+        { 
             if (current->children.find(c) == current->children.end())
                 return false;
             current = current->children[c];
@@ -154,12 +152,12 @@ class Trie {
 };
 
 //DSU: Disjoint - Set - Union
-
+//Complexity O(log n) in worst case because of path compression
 struct DSU
 {
     unordered_map<int, int> parents;
-    unordered_map<int, int> size; //union by size
-    //unordered_map<int, int> ranks; //union by rank  
+    unordered_map<int, int> size; //union by size path compression
+    unordered_map<int, int> rank; //union by rank path compression 
 
     void make_set(const vector<int>& vertices)
     {
@@ -167,6 +165,7 @@ struct DSU
         {
             parents[v] = v;
             size[v] = 1;
+            rank[v] = 0;
         }
     }
     int find_set(int n)
@@ -176,17 +175,34 @@ struct DSU
         parents[n] = find_set(parents[n]); //path compression
         return parents[n];
     }
-    void dsu_union(int a, int b)
+    void dsu_union_by_size(int a, int b)
     {
         a = find_set(a);
         b = find_set(b);
 
-        //union by size
-        if (size[b] > size[a])
-            swap(a, b);
+        if(a != b){
+            //union by size
+            if (size[b] > size[a])
+                swap(a, b);
 
-        parents[b] = a;
-        size[a] += size[b];
+            parents[b] = a;
+            size[a] += size[b];
+        }
+    }
+    void dsu_union_by_rank(int a, int b)
+    {
+        a = find_set(a);
+        b = find_set(b);
+
+        if (a != b) {
+            //union by rank
+            if (rank[b] > rank[a])
+                swap(a, b);
+
+            parents[b] = a;
+            if (rank[a] == rank[b])
+                rank[a]++;
+        }
     }
 };
 
@@ -279,7 +295,7 @@ void bucketSort(float arr[], int n)
         for (size_t j = 0; j < b[i].size(); j++)
             arr[index++] = b[i][j];
 }
-
+ 
 //Linked List
 //Reverse list recursive
 ListNode* reverseASingleList(ListNode* A, ListNode*& head)
@@ -333,13 +349,14 @@ int findKeyInSortedArray(vector<int> &sortedArray, int value)
 
         if (sortedArray[mid] == value) //found index
             return mid;
-    
+
         if (sortedArray[mid] > value) //search left
             high = mid - 1;
         else //search right
             low = mid + 1;
     }
-    return -1;
+    //not found
+    return -1; 
 }
 
 //Binary search sqrt(A)
@@ -568,13 +585,11 @@ vector<int> kahnsort(vector<vector<int>> &graph)
     }
     vector<int> sorted;
 
-    queue<int> q;
-    int added = 0;
+    queue<int> q; 
     for (size_t i = 0; i < indegree.size(); i++)
     {
         if (indegree[i] == 0)
-            q.push(i);
-        added++;
+            q.push(i); 
     }
 
     while (!q.empty())
@@ -587,8 +602,7 @@ vector<int> kahnsort(vector<vector<int>> &graph)
             indegree[n]--;
             if (indegree[n] <= 0)
             {
-                q.push(n);
-                added++;
+                q.push(n); 
             }
         }
     }
@@ -596,8 +610,8 @@ vector<int> kahnsort(vector<vector<int>> &graph)
         if(i > 0)
             return vector<int>(); //graph has a cycle,
     }
-    alternatively  keep an index of added nodes in the q,should match the number of vertices
-    if(added != graph.size()) return vector<int>();
+    alternatively check added nodes in the output,should match the number of vertices
+    if(sorted.size() != graph.size()) return vector<int>();
     */
 
     return sorted;
@@ -676,6 +690,14 @@ void rotateImage(vector<vector<int>> &A, bool CCW = false)
         reverse(A.begin(), A.end());
 }
 
+//Euclidean distance between two points in 2d
+// sqrt( (x2-x1)^2 + (y2-y1)^2)
+int distance(pair<int, int> p1, pair<int, int> p2)
+{
+    double deltax_squared = pow(p2.first - p1.first, 2);
+    double deltay_squared = pow(p2.second - p1.second, 2);
+    return sqrt(deltax_squared + deltay_squared);
+}
 ////////////////////////////////////////////
 ////////////   Mathematics    //////////////
 ////////////////////////////////////////////
@@ -697,12 +719,10 @@ long long nCk(int n, int k)
     long long denominator = factorial(k);
     return numerator / denominator;
 }
-
+ 
 int main()
 {  
-    std::cout << "Hello World!\n";
-
-
+    std::cout << "Hello World!\n"; 
     int x;
     cin >> x;
 } 
