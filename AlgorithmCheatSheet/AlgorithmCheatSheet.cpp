@@ -1,57 +1,9 @@
 // AlgorithmCheatSheet.cpp  
-
-#include <iostream>
-#include <vector>
-#include <set>
-#include <unordered_set>
-#include <map>
-#include <unordered_map>
-#include <queue>
-#include <stack>
-#include <list>
-#include <cassert>
-#include <algorithm>
+#include "Common.h"
 
 using namespace std;
 
-struct ListNode
-{
-    int val;
-    ListNode* next;
-    ListNode* previous; //for double linked list;
-    ListNode()
-    {
-        val = 0;
-        next = NULL;
-        previous = NULL;
-    }
-    ListNode(int v)
-    {
-        val = v;
-        next = NULL;
-        previous = NULL;
-    }
-};
 
-struct TreeNode
-{
-    int val;
-    TreeNode* left;
-    TreeNode* right;
-
-    TreeNode()
-    {
-        val = 0;
-        left = NULL; 
-        right = NULL;
-    }
-    TreeNode(int v)
-    {
-        val = v;
-        left = NULL;
-        right = NULL;
-    }
-};
 struct LinkedList
 {
     ListNode* head;  //front
@@ -228,6 +180,7 @@ int kmpSubstring(string A, string B)
             i++;
             j++;
         }
+        //restart with next pointer
         else 
         {
             j = 0;
@@ -244,13 +197,13 @@ int kmpSubstring(string A, string B)
 char intToChar(int i)
 {
     assert(i >= 0 && i <= 9);
-    return i + 'a';
+    return i + '0';
 }
 
 int charToInt(char c)
 {
     assert(c >= '0' && c <= '9');
-    return c - 'a';
+    return c - '0';
 }
 char uppertoLowerCase(char UC)
 {
@@ -263,8 +216,7 @@ char lowertoUpperCase(char lc)
     assert(lc >= 'a' && lc <= 'z');
     return lc - 'a' + 'A';
 }
-
-
+ 
 ////////////////////////////////////////////
 ////////////   Sorting        //////////////
 ////////////////////////////////////////////
@@ -342,7 +294,7 @@ ListNode* reverseList(ListNode* currentNode)
 int findKeyInSortedArray(vector<int> &sortedArray, int value)
 {
     int low = 0; 
-    int high = sortedArray.size() - 1;
+    int high = (int) sortedArray.size() - 1;
     while (low < high)
     {
         int mid = low + (high - low) / 2; //avoid overflow
@@ -370,11 +322,11 @@ int sqrt_binarySearch(int A)
     {
         long long mid = low + (high - low + 1) / 2;
         if (mid * mid == A)
-            return mid;
+            return (int) mid;
         if (mid * mid < A)
-            low = mid + 1;
+            low = (int) mid + 1;
         else
-            high = mid - 1;
+            high = (int) mid - 1;
     }
     return low;
 }
@@ -440,7 +392,7 @@ void levelOrderTraversal(TreeNode* root)
     {
         level++;
         //loop nodes in this level
-        for (int i = q.size(); i > 0; --i) 
+        for (size_t i = q.size(); i > 0; --i) 
         {
             TreeNode* n = q.front(); q.pop();
             /*do something*/
@@ -586,7 +538,7 @@ vector<int> kahnsort(vector<vector<int>> &graph)
     vector<int> sorted;
 
     queue<int> q; 
-    for (size_t i = 0; i < indegree.size(); i++)
+    for (int i = 0; i < (int) indegree.size(); i++)
     {
         if (indegree[i] == 0)
             q.push(i); 
@@ -674,8 +626,25 @@ void permute(vector<int> &nums, vector<vector<int>> &result)
 ////////////   Geometry       //////////////
 ////////////////////////////////////////////
 
+/* 2D to 1D mapping
+ * Using row major order (left to right then down)
+ * @param coordinates first row, second col
+ * @param width matrix width
+ */
+int matrix2dTo1dMaping(pair<int, int> coordinates, int width)
+{
+    return width * coordinates.first + coordinates.second; 
+}
+pair<int, int> linearTo2dMapping(int index, int width)
+{
+    pair<int, int> coordinates;
+    coordinates.first = index / width;
+    coordinates.second = index % width;
+    return coordinates;
+}
+
 /*Rotate image by 90 degrees inplace clockwise or counterclockwise
-* @param A 2D input image
+* @param A 2D input image passed by reference to be modified
 * @param CCW flag for counterclockwise
 */
 void rotateImage(vector<vector<int>> &A, bool CCW = false)
@@ -696,7 +665,7 @@ int distance(pair<int, int> p1, pair<int, int> p2)
 {
     double deltax_squared = pow(p2.first - p1.first, 2);
     double deltay_squared = pow(p2.second - p1.second, 2);
-    return sqrt(deltax_squared + deltay_squared);
+    return (int) (sqrt(deltax_squared + deltay_squared));
 }
 
 //Dot product 
@@ -704,9 +673,9 @@ int distance(pair<int, int> p1, pair<int, int> p2)
 int dotProduct(vector<int> v, vector<int> w)
 {
     assert(v.size() == w.size());
-    int size = v.size();
+    size_t size = v.size();
     int dot = 0;
-    for (int i = 0; i < size; i++)
+    for (size_t i = 0; i < size; i++)
     {
         dot += (v[i] * w[i]);
     }
@@ -825,15 +794,15 @@ vector<int> solveAslashB2(vector<vector<int>> A, vector<int> b)
 void eigenvectors(vector<vector<int>> A, int &lambda1, int &lambda2, vector<int> &e1, vector<int>& e2)
 {
 }
-*/
 
 //Convolution
 //
-void convolution2d(vector<vector<int>> A, vector<vector<int>> kernal)
+void convolution2d(vector<vector<int>> A, vector<vector<int>> kernal, bool zeropadding)
 {
 
 }
 
+*/
 ////////////////////////////////////////////
 ////////////   Mathematics    //////////////
 ////////////////////////////////////////////
@@ -854,11 +823,13 @@ long long nCk(int n, int k)
     long long numerator = factorial(n, n - k);
     long long denominator = factorial(k);
     return numerator / denominator;
-}
- 
+} 
+
+
 int main()
 {  
-    std::cout << "Hello World!\n"; 
+     
+    std::cout << "\nHello World!\n"; 
     int x;
     cin >> x;
 } 
