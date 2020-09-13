@@ -1,8 +1,48 @@
-// AlgorithmCheatSheet.cpp  
+#pragma once
+
 #include "Common.h"
 
-using namespace std;
+///////////////////////////////////////////////
+/////// Custom Data Structures ////////////////
+///////////////////////////////////////////////
+struct ListNode
+{
+    int val;
+    ListNode* next;
+    ListNode* previous; //for double linked list;
+    ListNode()
+    {
+        val = 0;
+        next = NULL;
+        previous = NULL;
+    }
+    ListNode(int v)
+    {
+        val = v;
+        next = NULL;
+        previous = NULL;
+    }
+};
 
+struct TreeNode
+{
+    int val;
+    TreeNode* left;
+    TreeNode* right;
+
+    TreeNode()
+    {
+        val = 0;
+        left = NULL;
+        right = NULL;
+    }
+    TreeNode(int v)
+    {
+        val = v;
+        left = NULL;
+        right = NULL;
+    }
+};
 
 struct LinkedList
 {
@@ -13,7 +53,7 @@ struct LinkedList
     LinkedList() { head = NULL; tail = NULL; }
     void clear() {/*clear nodes from head to end, NULL ptr*/ }
 
-    void popBack() 
+    void popBack()
     {
         if (tail != NULL) {
             if (head == tail)
@@ -29,7 +69,7 @@ struct LinkedList
             temp = NULL;
         }
     }
-    void pushFront(ListNode* newHead) 
+    void pushFront(ListNode* newHead)
     {
         if (head != NULL) {
             newHead->next = head;
@@ -42,7 +82,7 @@ struct LinkedList
         }
     }
     //emplace_front
-    void moveToHead(ListNode* n) 
+    void moveToHead(ListNode* n)
     {
         if (n != head) {
             n->previous->next = n->next;
@@ -65,17 +105,17 @@ class Trie {
         frequency = 0;
         isCompleteWord = false;
     }
-    void addWord(string word) 
+    void addWord(string word)
     {
         if (word.empty()) return;
         Trie* current = this;
         for (char c : word)
-        { 
+        {
             current->frequency++;
-            if (current->children.find(c) == current->children.end()) 
-                current->children[c] = new Trie(); 
+            if (current->children.find(c) == current->children.end())
+                current->children[c] = new Trie();
 
-            current = current->children[c]; 
+            current = current->children[c];
         }
         current->isCompleteWord = true;
     }
@@ -83,7 +123,7 @@ class Trie {
     {
         Trie* current = this;
         for (char c : pref)
-        { 
+        {
             if (current->children.find(c) == current->children.end())
                 return false;
             current = current->children[c];
@@ -94,7 +134,7 @@ class Trie {
     {
         Trie* current = this;
         for (char c : word)
-        { 
+        {
             if (current->children.find(c) == current->children.end())
                 return false;
             current = current->children[c];
@@ -132,7 +172,7 @@ struct DSU
         a = find_set(a);
         b = find_set(b);
 
-        if(a != b){
+        if (a != b) {
             //union by size
             if (size[b] > size[a])
                 swap(a, b);
@@ -158,41 +198,77 @@ struct DSU
     }
 };
 
+///////////////////////////////////////////////
+/////// Data types Constructions //////////////
+///////////////////////////////////////////////
 
-////////////////////////////////////////////
-////////////   Strings        //////////////
-////////////////////////////////////////////
-
-
-/* KMP Algorithm(find substring index)
- * Knuth Morris Pratt
- * If string B is substring of A, return starting index of substring
-*/
-int kmpSubstring(string A, string B) 
+ListNode* createLinkedList(const vector<int>& v)
 {
-    int prev_start = 0;
-    size_t i = prev_start;
-    size_t j = 0;
-    while (i < A.size() && j < B.size()) 
+    if (v.size() == 0) return NULL;
+
+    ListNode* head = new ListNode(v[0]);
+    ListNode* ptr = head;
+
+    for (int i = 1; i < v.size(); i++)
     {
-        if (A[i] == B[j]) 
-        {
-            i++;
-            j++;
-        }
-        //restart with next pointer
-        else 
-        {
-            j = 0;
-            i = prev_start;
-            prev_start++;
-        }
-        if (j == B.size())
-            return prev_start;
+        ptr->next = new ListNode(v[i]);
+        ptr = ptr->next;
     }
-    return -1;
+    return head;
 }
 
+vector<int> linkedListToVector(ListNode* head)
+{
+    vector<int> v;
+    while (head)
+    {
+        v.push_back(head->val);
+        head = head->next;
+    }
+    return v;
+}
+TreeNode* createTree(const vector<int>& v)
+{
+    if (v.size() == 0) return NULL;
+
+    TreeNode* root = new TreeNode(v[0]);
+
+    queue<TreeNode*> q;
+    q.push(root);
+
+    for (int i = 1; i < v.size(); i += 2)
+    {
+        TreeNode* p = q.front();
+        q.pop();
+        if (v[i] != -1)
+        {
+            p->left = new TreeNode(v[i]);
+            q.push(p->left);
+        }
+        if (v[i + 1] != -1)
+        {
+            p->right = new TreeNode(v[i]);
+            q.push(p->right);
+        }
+    }
+
+    return root;
+}
+
+
+///////////////////////////////////////////////
+/////// Pretty Print //////////////////////////
+///////////////////////////////////////////////
+
+void print2dVector(vector<vector<int>>& input)
+{
+    for (vector<int> v : input)
+    {
+        for (int i : v)
+            cout << i << ", ";
+        cout << endl;
+    }
+}
 //Char conversions
 char intToChar(int i)
 {
@@ -205,6 +281,7 @@ int charToInt(char c)
     assert(c >= '0' && c <= '9');
     return c - '0';
 }
+
 char uppertoLowerCase(char UC)
 {
     assert(UC >= 'A' && UC <= 'Z');
@@ -216,22 +293,56 @@ char lowertoUpperCase(char lc)
     assert(lc >= 'a' && lc <= 'z');
     return lc - 'a' + 'A';
 }
- 
+
+////////////////////////////////////////////
+////////////   Strings        //////////////
+////////////////////////////////////////////
+
+
+/* KMP Algorithm(find substring index)
+ * Knuth Morris Pratt
+ * If string B is substring of A, return starting index of substring
+*/
+int kmpSubstring(string A, string B)
+{
+    int prev_start = 0;
+    size_t i = prev_start;
+    size_t j = 0;
+    while (i < A.size() && j < B.size())
+    {
+        if (A[i] == B[j])
+        {
+            i++;
+            j++;
+        }
+        //restart with next pointer
+        else
+        {
+            j = 0;
+            i = prev_start;
+            prev_start++;
+        }
+        if (j == B.size())
+            return prev_start;
+    }
+    return -1;
+}
+
 ////////////////////////////////////////////
 ////////////   Sorting        //////////////
 ////////////////////////////////////////////
 
-/*Bucket sort 
-* Function to sort arr[] of size n using bucket sort 
+/*Bucket sort
+* Function to sort arr[] of size n using bucket sort
 * Time Complexity: O(n+k) average case, O(n^2) worst case
 * Space Complexity: O(n)
 */
-void bucketSort(float arr[], int n) 
+void bucketSort(float arr[], int n)
 {
     /* 1) Create n empty buckets */
     vector<vector<float>> b(n);
     /* 2) Put array elements in different buckets */
-    for (int i = 0; i < n; i++) 
+    for (int i = 0; i < n; i++)
     {
         int bi = n * (int)arr[i]; // Index in bucket 
         b[bi].push_back(arr[i]);
@@ -247,10 +358,10 @@ void bucketSort(float arr[], int n)
         for (size_t j = 0; j < b[i].size(); j++)
             arr[index++] = b[i][j];
 }
- 
+
 //Linked List
 //Reverse list recursive
-ListNode* reverseASingleList(ListNode* A, ListNode*& head)
+ListNode* reverseListRecursive(ListNode* A, ListNode*& head)
 {
     if (A == NULL)
         return NULL;
@@ -259,7 +370,7 @@ ListNode* reverseASingleList(ListNode* A, ListNode*& head)
         head = A;
         return A;
     }
-    ListNode* newNext = reverseASingleList(A->next, head);
+    ListNode* newNext = reverseListRecursive(A->next, head);
     newNext->next = A;
     A->next = NULL;
 
@@ -267,8 +378,8 @@ ListNode* reverseASingleList(ListNode* A, ListNode*& head)
 }
 
 //Iterative:
-ListNode* reverseList(ListNode* currentNode) 
-{ 
+ListNode* reverseListIterative(ListNode* currentNode)
+{
     ListNode* previousNode = NULL;
     ListNode* nextNode;
 
@@ -288,13 +399,13 @@ ListNode* reverseList(ListNode* currentNode)
 ////////////////////////////////////////////
 
 /* Binary search in Array
-* Find index of given key in a sorted array. 
+* Find index of given key in a sorted array.
 * Time Complexity O(log n)
 */
-int findKeyInSortedArray(vector<int> &sortedArray, int value)
+int findKeyInSortedArray(vector<int>& sortedArray, int value)
 {
-    int low = 0; 
-    int high = (int) sortedArray.size() - 1;
+    int low = 0;
+    int high = (int)sortedArray.size() - 1;
     while (low < high)
     {
         int mid = low + (high - low) / 2; //avoid overflow
@@ -308,7 +419,7 @@ int findKeyInSortedArray(vector<int> &sortedArray, int value)
             low = mid + 1;
     }
     //not found
-    return -1; 
+    return -1;
 }
 
 //Binary search sqrt(A)
@@ -322,22 +433,22 @@ int sqrt_binarySearch(int A)
     {
         long long mid = low + (high - low + 1) / 2;
         if (mid * mid == A)
-            return (int) mid;
+            return (int)mid;
         if (mid * mid < A)
-            low = (int) mid + 1;
+            low = (int)mid + 1;
         else
-            high = (int) mid - 1;
+            high = (int)mid - 1;
     }
     return low;
 }
 //Problems
 /* Painter Partition problem: minimum time to finish painting.
  * Binary search in rotated array
-*/ 
+*/
 
 //Binary search tree
 //Delete a node from a BST
-TreeNode* findMinimum(TreeNode* root) 
+TreeNode* findMinimum(TreeNode* root)
 {
     TreeNode* current = root;
     while (current->left) {
@@ -345,7 +456,7 @@ TreeNode* findMinimum(TreeNode* root)
     }
     return current;
 }
-TreeNode* deleteNode(TreeNode* root, int key) 
+TreeNode* deleteNode(TreeNode* root, int key)
 {
     if (root == NULL)
         return NULL;
@@ -357,7 +468,7 @@ TreeNode* deleteNode(TreeNode* root, int key)
 
     else //root->val == key 
     {
-        if (root->left && root->right) 
+        if (root->left && root->right)
         {
             TreeNode* toDelete = findMinimum(root->right); //or find maximum in left subtree 
             root->val = toDelete->val;
@@ -372,7 +483,7 @@ TreeNode* deleteNode(TreeNode* root, int key)
                 root = root->right;
             delete toDelete;
         }
-        else 
+        else
         {
             delete root;
             root = NULL;
@@ -380,19 +491,19 @@ TreeNode* deleteNode(TreeNode* root, int key)
     }
     return root;
 }
-  
+
 //level order traversal for trees 
-void levelOrderTraversal(TreeNode* root) 
+void levelOrderTraversal(TreeNode* root)
 {
     int current_max_level = 0;
     queue<TreeNode*> q;
     q.push(root);
     int level = 0;
-    while (!q.empty()) 
+    while (!q.empty())
     {
         level++;
         //loop nodes in this level
-        for (size_t i = q.size(); i > 0; --i) 
+        for (size_t i = q.size(); i > 0; --i)
         {
             TreeNode* n = q.front(); q.pop();
             /*do something*/
@@ -433,7 +544,7 @@ pair<int, int> treeDepthAndDiameter(TreeNode* root) {
 
 
 /* DFS Depth first search graph traversal
-*Space Complexity : AdjList O(V + E) AdjMat O(V ^ 2) - 
+*Space Complexity : AdjList O(V + E) AdjMat O(V ^ 2) -
 * Time Complexity: O(V)
 */
 //Recursive call. Can be made to return a bool value if we are checking cycles. 
@@ -463,7 +574,7 @@ bool dfs_visit(vector<vector<int>>& adj, int s, vector<bool>& parent, vector<boo
     return true;
 }
 //Main dfs function that calls every vertex in the set (in case of an unconnected vertex) 
-void dfs(vector<vector<int>> & adj, vector<int>VerticesSet) {
+void dfs(vector<vector<int>>& adj, vector<int>VerticesSet) {
     //parent aka visited vector. can be a map to know the parent pointers for
     //topological sort!
     vector<bool> parent(VerticesSet.size(), false);
@@ -482,12 +593,12 @@ void dfs(vector<vector<int>> & adj, vector<int>VerticesSet) {
 }
 
 
-/*BFS Breadth first search graph traversal 
-* Space Complexity : AdjList O(V + E) AdjMat O(V ^ 2) 
+/*BFS Breadth first search graph traversal
+* Space Complexity : AdjList O(V + E) AdjMat O(V ^ 2)
 * Time Complexity Time : O(V)
-* BFS is used for Shortest Path. 
-* @param s is starting node. 
-* @param t is destination node(optional) 
+* BFS is used for Shortest Path.
+* @param s is starting node.
+* @param t is destination node(optional)
 */
 void BFS(int s, map<int, vector<int>> adj, int t)
 {
@@ -511,11 +622,11 @@ void BFS(int s, map<int, vector<int>> adj, int t)
         for (int v : adj[u])
         {
             //If adjacent nodes are not visited (not in parent)
-            if (parent.count(v)) 
+            if (parent.count(v))
             {
                 //if (v == t)
-                /*destination reached*/ 
-                
+                /*destination reached*/
+
                 parent.insert({ v, u }); //assign u as parent
                 level.insert({ v, i + 1 }); //set their level
                 frontier.push(v); //add to queue 
@@ -525,7 +636,7 @@ void BFS(int s, map<int, vector<int>> adj, int t)
 }
 
 //Topological sort of a DAG (directed acyclic graph)
-vector<int> kahnsort(vector<vector<int>> &graph)
+vector<int> kahnsort(vector<vector<int>>& graph)
 {
     vector<int> indegree(graph.size());
     for (vector<int> n : graph)
@@ -537,11 +648,11 @@ vector<int> kahnsort(vector<vector<int>> &graph)
     }
     vector<int> sorted;
 
-    queue<int> q; 
-    for (int i = 0; i < (int) indegree.size(); i++)
+    queue<int> q;
+    for (int i = 0; i < (int)indegree.size(); i++)
     {
         if (indegree[i] == 0)
-            q.push(i); 
+            q.push(i);
     }
 
     while (!q.empty())
@@ -554,7 +665,7 @@ vector<int> kahnsort(vector<vector<int>> &graph)
             indegree[n]--;
             if (indegree[n] <= 0)
             {
-                q.push(n); 
+                q.push(n);
             }
         }
     }
@@ -573,16 +684,16 @@ vector<int> kahnsort(vector<vector<int>> &graph)
 ////////////////////////////////////////////
 ////////////   Backtracking   //////////////
 ////////////////////////////////////////////
- 
+
 
 /*3 Variant Examples for permutation function :
  * Given a collection of numbers, return all possible permutations.
- * @param num : initial vector 
+ * @param num : initial vector
  * @param start : start index for the recursive call
  * @param result : output list of vector permutations
 */
 //Variant 1
-void permute(vector<int> & num, int start, vector<vector<int> > & result) {
+void permute(vector<int>& num, int start, vector<vector<int> >& result) {
     if (start == num.size() - 1) {
         result.push_back(num);
         return;
@@ -598,7 +709,7 @@ void permute(vector<int> & num, int start, vector<vector<int> > & result) {
 * @param curr : current vector for recursive call
 * @param result : output list of vector permutations
 */
-void permute(vector<int> & nums, vector<int> & curr, vector<vector<int>> & result) {
+void permute(vector<int>& nums, vector<int>& curr, vector<vector<int>>& result) {
     if (curr.size() == nums.size()) {
         result.push_back(curr);
         return;
@@ -614,14 +725,14 @@ void permute(vector<int> & nums, vector<int> & curr, vector<vector<int>> & resul
     }
 }
 //Variant 3 (using std::next_permutation)
-void permute(vector<int> &nums, vector<vector<int>> &result)
+void permute(vector<int>& nums, vector<vector<int>>& result)
 {
     sort(nums.begin(), nums.end()); //must be sorted in the beginning, otherwise permutations are missing
     do {
         result.push_back(nums);
     } while (next_permutation(nums.begin(), nums.end()));
 }
- 
+
 ////////////////////////////////////////////
 ////////////   Geometry       //////////////
 ////////////////////////////////////////////
@@ -633,7 +744,7 @@ void permute(vector<int> &nums, vector<vector<int>> &result)
  */
 int matrix2dTo1dMaping(pair<int, int> coordinates, int width)
 {
-    return width * coordinates.first + coordinates.second; 
+    return width * coordinates.first + coordinates.second;
 }
 pair<int, int> linearTo2dMapping(int index, int width)
 {
@@ -647,15 +758,15 @@ pair<int, int> linearTo2dMapping(int index, int width)
 * @param A 2D input image passed by reference to be modified
 * @param CCW flag for counterclockwise
 */
-void rotateImage(vector<vector<int>> &A, bool CCW = false)
+void rotateImage(vector<vector<int>>& A, bool CCW = false)
 {
     //counter clockwise : swap first, then reverse
-    if(!CCW)
+    if (!CCW)
         reverse(A.begin(), A.end());
     for (size_t i = 0; i < A.size(); i++)
         for (size_t j = i + 1; j < A[0].size(); j++)
             swap(A[i][j], A[j][i]);
-    if(CCW)
+    if (CCW)
         reverse(A.begin(), A.end());
 }
 
@@ -665,7 +776,7 @@ int distance(pair<int, int> p1, pair<int, int> p2)
 {
     double deltax_squared = pow(p2.first - p1.first, 2);
     double deltay_squared = pow(p2.second - p1.second, 2);
-    return (int) (sqrt(deltax_squared + deltay_squared));
+    return (int)(sqrt(deltax_squared + deltay_squared));
 }
 
 //Dot product 
@@ -686,7 +797,7 @@ int dotProduct(vector<int> v, vector<int> w)
 //alternative calculation   : v x w = det([v_x w_x]) 
 //                                        [v_y w_y] 
 vector<int> crossProduct3(vector<int> v, vector<int> w)
-{ 
+{
     vector<int> cross(3);
     cross[0] = v[1] * w[2] - v[2] * w[1];
     cross[1] = v[2] * w[0] - v[0] * w[2];
@@ -712,7 +823,7 @@ int determinant2(vector<vector<int>> A)
     return A[0][0] * A[1][1] - A[1][0] * A[0][1]; //<-- cross product z value
 }
 int determinant3(vector<vector<int>> A)
-{ 
+{
     assert(A.size() == 3);
     assert(A[0].size() == 3);
 
@@ -720,7 +831,7 @@ int determinant3(vector<vector<int>> A)
     int a = A[0][0] * (A[1][1] * A[2][2] - A[2][1] * A[1][2]);
     int b = A[1][0] * (A[2][1] * A[0][2] - A[0][1] * A[2][2]);
     int c = A[2][0] * (A[0][1] * A[1][2] - A[1][1] * A[0][2]);
-     
+
     return a + b + c;
 }
 //Addition of two vectors
@@ -761,7 +872,7 @@ vector<int> transform2d(vector<vector<int>> A, vector<int> x)
     result[0] = x[0] * A[0][0] + x[1] * A[1][0];
     result[1] = x[0] * A[1][0] + x[1] * A[1][1];
 
-     return result;
+    return result;
 }
 /* TODO
 //Inverse of a matrix
@@ -823,13 +934,4 @@ long long nCk(int n, int k)
     long long numerator = factorial(n, n - k);
     long long denominator = factorial(k);
     return numerator / denominator;
-} 
-
-
-int main()
-{  
-     
-    std::cout << "\nHello World!\n"; 
-    int x;
-    cin >> x;
-} 
+}
