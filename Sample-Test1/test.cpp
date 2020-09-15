@@ -27,7 +27,7 @@ TEST(String, KMP_SUBSTRING1)
 	string A = "Hello World";
 	string B = "World";
 	int index = kmpSubstring(A, B);
-	EXPECT_EQ(index, 7);
+	EXPECT_EQ(index, 6);
 }
 TEST(String, KMP_SUBSTRING2)
 {
@@ -81,4 +81,14 @@ TEST(Geometry, DotProduct2)
 	vector<int> p2 = { 1, -1 };
 	int dotp = dotProduct(p1, p2);
 	EXPECT_EQ(dotp, 0);
+}
+
+TEST(Strings, KMP)
+{
+	string s = "Hello World";
+	string b = "World";
+	int i = kmpSubstring(s, b);
+	EXPECT_EQ(i, 6);
+	int j = kmpSubstring(s, "f");
+	EXPECT_EQ(j, -1);
 }

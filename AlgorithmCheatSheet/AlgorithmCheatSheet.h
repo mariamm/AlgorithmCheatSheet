@@ -305,13 +305,13 @@ char lowertoUpperCase(char lc)
 */
 int kmpSubstring(string A, string B)
 {
-    int prev_start = 0;
-    size_t i = prev_start;
+    int prev_start = 0; 
+    size_t i = 0;
     size_t j = 0;
     while (i < A.size() && j < B.size())
     {
         if (A[i] == B[j])
-        {
+        { 
             i++;
             j++;
         }
@@ -319,12 +319,11 @@ int kmpSubstring(string A, string B)
         else
         {
             j = 0;
-            i = prev_start;
-            prev_start++;
+            i = ++prev_start; 
         }
-        if (j == B.size())
-            return prev_start;
     }
+    if (j == B.size())
+        return prev_start;
     return -1;
 }
 
