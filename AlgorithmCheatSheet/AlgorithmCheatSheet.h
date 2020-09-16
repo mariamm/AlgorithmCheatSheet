@@ -535,7 +535,88 @@ pair<int, int> treeDepthAndDiameter(TreeNode* root) {
     return { maxdepth , maxdiameter };
 }
 
+/* Segment tree
+ * Time complexity: construct treeO(nlogn)
+ * Time complexity search: O(logn)
+ * Space complexity: O(nlogn)
+*  Minimum Range 
+*/
+struct SegmentTree 
+{
+    enum class Type {
+        Minimum,
+        Sum
+    };
+    SegmentTree(vector<int>& input, Type type)
+    {
+        m_range = input.size() - 1;
+        int n = getSize(input.size());
+        if (type == Type::Minimum)
+            m_tree.resize(n, INT_MAX);
+        else
+            m_tree.resize(n);
 
+        m_type = type;
+        constructTree(input, 0, 0, m_range);
+    }
+    void constructTree(vector<int>& input, int pos, int low, int high)
+    {
+        if (low == high)
+            m_tree[pos] = input[low];
+        else
+        {
+            int mid = low + (high - low) / 2;
+            constructTree(input, 2 * pos + 1, low, mid);
+            constructTree(input, 2 * pos + 2, mid+1, high);
+            m_tree[pos] = operation(m_tree[2 * pos + 1], m_tree[2 * pos + 2]); 
+        }
+
+    }
+    int rangeQuery(int i, int j)
+    {
+        return rangeQueryHelper(0, m_range, i, j, 0);
+    }
+
+    int operation(int i, int j)
+    {
+        if (m_type == Type::Minimum)
+            return min(i, j);
+        else if (m_type == Type::Sum)
+            return i + j;
+        else
+            return -1;
+    }
+    private: 
+        vector<int> m_tree;
+        int m_range;
+        Type m_type;
+        int rangeQueryHelper(int low, int high, int qlow, int qhigh, int pos)
+        { 
+            //full overlap
+            if(low >= qlow && high <= qhigh)
+                return m_tree[pos];
+            //no overlap
+            else if(low > qhigh || high < qlow)
+                return m_type == Type::Minimum ? INT_MAX : 0;
+            //partial overlap
+            int mid = low + (high - low) / 2;
+            return operation(rangeQueryHelper(low, mid, qlow, qhigh, 2*pos+1), rangeQueryHelper( mid+1, high, qlow, qhigh, 2*pos + 2));  
+        } 
+
+    int getSize(int inputSize)
+    {
+        int n = 0;
+        for (int i = 0, base = 1; i < 32; i++, base *= 2)
+        {
+            if (base >= inputSize)
+            {
+                n = 2 * base - 1;
+                break;
+            }
+        }
+        return n; 
+    }
+};
 
 ////////////////////////////////////////////
 ////////////   Graphs         //////////////

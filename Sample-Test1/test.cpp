@@ -90,5 +90,40 @@ TEST(Strings, KMP)
 	int i = kmpSubstring(s, b);
 	EXPECT_EQ(i, 6);
 	int j = kmpSubstring(s, "f");
-	EXPECT_EQ(j, -1);
+	EXPECT_EQ(j, -1); 
+}
+
+TEST(SegmentTree, MinRangeValidInput)
+{
+	vector<int> v = { 1, 2, 4, 2, 6, 7, 3, -8, 3, 5, 8, 4,-9, 483, 2, 983, -123}; //17
+	vector<pair<int, int>> ranges = { {0,16}, {8,16}, {5,7}, {2,4}, {0,5}, {9,13}, {14, 16} };
+	SegmentTree t(v, SegmentTree::Type::Minimum);
+	vector<int> min_output;
+	vector<int> expected_output = { -123, -123, -8, 2, 1, -9, -123 };
+	for (pair<int, int> p : ranges)
+	{
+		min_output.push_back(t.rangeQuery(p.first, p.second));
+	}
+	EXPECT_EQ(min_output.size(), expected_output.size());
+	for (int i = 0; i < min_output.size(); i++)
+	{
+		EXPECT_EQ(min_output[i], expected_output[i]);
+	}
+} 
+TEST(SegmentTree, SumRangeValidInput)
+{
+	vector<int> v = { 1, 2, 4, -2, 6, 7 }; //6
+	vector<pair<int, int>> ranges = { {0,5}, {1,4}, {2,3}, {2,4}, {1,5}, {3,5} };
+	SegmentTree t(v, SegmentTree::Type::Sum);
+	vector<int> sum_output;
+	vector<int> expected_output = {18, 10, 2, 8, 17, 11 };
+	for (pair<int, int> p : ranges)
+	{
+		sum_output.push_back(t.rangeQuery(p.first, p.second));
+	}
+	EXPECT_EQ(sum_output.size(), expected_output.size());
+	for (int i = 0; i < sum_output.size(); i++)
+	{
+		EXPECT_EQ(sum_output[i], expected_output[i]);
+	}
 }
