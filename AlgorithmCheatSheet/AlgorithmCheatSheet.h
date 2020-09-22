@@ -1015,3 +1015,72 @@ long long nCk(int n, int k)
     long long denominator = factorial(k);
     return numerator / denominator;
 }
+
+
+////////////////////////////////////////////
+//////////// Linear time algorithms  ///////
+////////////////////////////////////////////
+
+
+/* Boyer Moore Majority Vote 
+ * Find majority element in linear time, constant space
+ * @param nums input vector
+ * @param candidate return majority element if true
+ * @return true if majority element appearing more than 50% or false if no majority is found
+ */
+bool boyerMooreMajorityVote(const vector<int>& nums, int &candidate)
+{
+    int count = 0;
+    //find candidate
+    for (int i : nums)
+    {
+        if (count == 0)
+            candidate = i;
+
+        if (candidate == i)
+            count++;
+        else
+            count--;
+    }
+
+    // verify validity of candidate
+    count = 0;
+    for (int i : nums)
+    {
+        if (i == candidate)
+            count++;
+    }
+    if (count > nums.size() / 2)
+        return true;
+    else
+        return false; //invalid, no majority element
+}
+
+/* Kadane's Algorithm (Maximum Sum Subarray)
+ * In computer vision, maximum-subarray algorithms are used on bitmap images to detect the brightest area in an image.
+ * @return the maximum sum in subarray
+ * @param nums input array which may include negative numbers
+ */
+
+int maximumSumSubarray(vector<int>& nums)
+{
+    int current = 0;
+    int ans = INT_MIN;
+    for (int i : nums)
+    {
+        current += i;
+        ans = max(ans, current); //this is evaluated first to include negative numbers
+        current = max(current, 0); 
+    }
+    return ans;
+}
+/* Modified Kadane's Algorithm ( Start and End of Maximum Sum Subarray)
+ * @return pair first start index of subarray, pair second last index of subarray;
+ * @param nums input array which may include negative numbers
+
+pair<int, int> maximumSubarrayIndices(vector<int>& nums)
+{
+
+
+} 
+*/
