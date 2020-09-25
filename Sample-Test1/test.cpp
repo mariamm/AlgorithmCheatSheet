@@ -127,3 +127,58 @@ TEST(SegmentTree, SumRangeValidInput)
 		EXPECT_EQ(sum_output[i], expected_output[i]);
 	}
 }
+
+TEST(Permutations, Variant1)
+{
+	vector<int> v = { 1, 2, 3 };
+	vector<vector<int>> permutations;
+	permute(v, 0, permutations);
+	sort(permutations.begin(), permutations.end());
+	vector<vector<int>> solution = { {1,2,3}, {1,3,2}, {2,1,3}, {2,3,1}, {3,1,2}, {3,2,1} };
+
+	EXPECT_EQ(solution.size(), permutations.size());
+	for (int i = 0; i < solution.size(); i++)
+	{
+		for (int j = 0; j < solution[0].size(); j++)
+		{
+			EXPECT_EQ(solution[i][j], permutations[i][j]);
+		}
+	}
+}
+TEST(Permutations, Variant2)
+{
+	vector<int> v = { 1, 2, 3 };
+	vector<vector<int>> permutations;
+	vector<int> current;
+	permute(v, current, permutations);
+
+	vector<vector<int>> solution = { {1,2,3}, {1,3,2}, {2,1,3}, {2,3,1}, {3,1,2}, {3,2,1} };
+
+	EXPECT_EQ(solution.size(), permutations.size());
+	for (int i = 0; i < solution.size(); i++)
+	{
+		for (int j = 0; j < solution[0].size(); j++)
+		{
+			EXPECT_EQ(solution[i][j], permutations[i][j]);
+		}
+	}
+}
+
+TEST(Permutations, Variant3)
+{
+	vector<int> v = { 1, 2, 3 };
+	vector<vector<int>> permutations;
+	vector<int> current;
+	permute(v, permutations);
+
+	vector<vector<int>> solution = { {1,2,3}, {1,3,2}, {2,1,3}, {2,3,1}, {3,1,2}, {3,2,1} };
+
+	EXPECT_EQ(solution.size(), permutations.size());
+	for (int i = 0; i < solution.size(); i++)
+	{
+		for (int j = 0; j < solution[0].size(); j++)
+		{
+			EXPECT_EQ(solution[i][j], permutations[i][j]);
+		}
+	}
+}

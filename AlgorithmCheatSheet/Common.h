@@ -13,3 +13,8 @@
 #include <algorithm>
 
 using namespace std;
+
+//C++ 11 : lambdas, auto type, list initialization, smart pointers, move semantics, range for loops
+//C++ 14 : return type deduction, binary lieterals, generic lambdas decle types
+//C++ 17 : structured binding, nested namesapces, inline variables, constexpr lamdas
+//C++ 20 : 

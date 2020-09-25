@@ -767,7 +767,7 @@ vector<int> kahnsort(vector<vector<int>>& graph)
 
 
 /*3 Variant Examples for permutation function :
- * Given a collection of numbers, return all possible permutations.
+ * Given a collection of numbers, return all possible permutations. Aka Heap's algorithm.
  * @param num : initial vector
  * @param start : start index for the recursive call
  * @param result : output list of vector permutations
@@ -788,6 +788,8 @@ void permute(vector<int>& num, int start, vector<vector<int> >& result) {
  *@param num : initial vector
 * @param curr : current vector for recursive call
 * @param result : output list of vector permutations
+* Not really a good solution considering that we have to modify nums with INT_MAX to not be reused, which limits the 
+* possibility of having INT_MAX as an actual value in the input
 */
 void permute(vector<int>& nums, vector<int>& curr, vector<vector<int>>& result) {
     if (curr.size() == nums.size()) {
@@ -796,12 +798,15 @@ void permute(vector<int>& nums, vector<int>& curr, vector<vector<int>>& result) 
     }
     for (size_t i = 0; i < nums.size(); i++)
     {
-        curr.push_back(nums[i]);
-        int temp = nums[i];
-        nums[i] = INT_MAX;
-        permute(nums, curr, result);
-        nums[i] = temp;
-        curr.pop_back();
+        if(nums[i] != INT_MAX)
+        {
+            curr.push_back(nums[i]);
+            int temp = nums[i];
+            nums[i] = INT_MAX;
+            permute(nums, curr, result);
+            nums[i] = temp;
+            curr.pop_back();
+        }
     }
 }
 //Variant 3 (using std::next_permutation)
