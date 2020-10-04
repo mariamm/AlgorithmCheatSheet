@@ -151,6 +151,16 @@ struct DSU
     unordered_map<int, int> size; //union by size path compression
     unordered_map<int, int> rank; //union by rank path compression 
 
+    // 1-based-index
+    void make_set(int vertices)
+    {
+        for (int v = 1; v<=vertices; v++)
+        {
+            parents[v] = v;
+            size[v] = 1;
+            rank[v] = 0;
+        }
+    }
     void make_set(const vector<int>& vertices)
     {
         for (int v : vertices)
@@ -167,7 +177,7 @@ struct DSU
         parents[n] = find_set(parents[n]); //path compression
         return parents[n];
     }
-    void dsu_union_by_size(int a, int b)
+    void union_by_size(int a, int b)
     {
         a = find_set(a);
         b = find_set(b);
@@ -181,7 +191,7 @@ struct DSU
             size[a] += size[b];
         }
     }
-    void dsu_union_by_rank(int a, int b)
+    void union_by_rank(int a, int b)
     {
         a = find_set(a);
         b = find_set(b);
@@ -752,18 +762,146 @@ vector<int> kahnsort(vector<vector<int>>& graph)
     /*for(int i : indegree){
         if(i > 0)
             return vector<int>(); //graph has a cycle,
-    }
-    alternatively check added nodes in the output,should match the number of vertices
+    }*/
+    //alternatively check added nodes in the output,should match the number of vertices
     if(sorted.size() != graph.size()) return vector<int>();
-    */
-
+    
     return sorted;
 }
 
+/* Prim's Minimum Spanning Tree algorithm
+ * @param edges: vector of vectors containing e edges in the graph. vector e[0] start node, e[1] end node, e[2] weight
+ * @param N: Number of vertices
+ * @return: total weights/costs of the minimum spanning tree
+ */
+
+int primsMinimumSpanningTree(vector<vector<int>> &edges, int N)
+{
+    vector<vector<pair<int, int>>> graph(N + 1);
+    for (auto& edge : edges) {
+        graph[edge[0]].push_back(make_pair(edge[2], edge[1]));
+        graph[edge[1]].push_back(make_pair(edge[2], edge[0]));
+    }
+
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> q;//minheap edge, adjacency list
+    unordered_set<int> visited;
+    q.push(make_pair(0, 1));
+    
+    int totalCost = 0;
+    vector<vector<vector<int>>> minTree(N + 1);
+
+    while (!q.empty())
+    {
+        auto curr = q.top();
+        q.pop();
+        if (visited.find(curr.second) != visited.end()) continue;
+
+        visited.insert(curr.second);
+
+        totalCost += curr.first;
+        for (auto& adj : graph[curr.second])
+        {
+            if (visited.find(adj.second) != visited.end()) continue;
+            q.push(adj);
+        }
+    }
+
+    return totalCost;
+}
+
+/* Krushkal's Minimum Spanning Tree algorithm
+ * @param edges: vector of vectors containing e edges in the graph. vector e[0] start node, e[1] end node, e[2] weight
+ * @param N: vertices
+ * @return: total weights/costs of the minimum spanning tree
+ */
+int krushkalsMinimumSpanningTree(vector<vector<int> >& edges, int N)
+{
+    auto customsort = [](vector<int> a, vector<int> b)
+    {
+        return a[2] < b[2];
+    };
+    sort(edges.begin(), edges.end(), customsort);
+
+    DSU dsu;
+    dsu.make_set(N);
+
+    int weights = 0;
+    vector<vector<vector<int>>> minTree(N+1);
+    for (vector<int> e : edges)
+    {
+        int x = e[0];
+        int y = e[1];
+        int w = e[2];
+
+        //already a uni
+        if (dsu.find_set(x) == dsu.find_set(y))
+            continue;
+        else
+        {
+            minTree[x].push_back({ y, w });
+            minTree[y].push_back({ x, w });
+
+            weights += w;
+            dsu.union_by_size(x, y);
+        }
+    }
+    return weights;
+}
 
 ////////////////////////////////////////////
 ////////////   Backtracking   //////////////
 ////////////////////////////////////////////
+
+/* Graph Coloring: 1. Check if graph is Bipartite (split in two groups connected to the other only)
+ * Solution: Check if graph can be colored with 2 colors
+ * @param graph: graph presented in adjacency list
+ * @param v: current vertix
+ * @param color: color of current vertix
+ * @param visited: visited vertices set
+ * @return: bool if graph can be colored
+ */
+
+bool colorGraph(vector<vector<int>>& graph, int v, int color, unordered_map<int, int>& visited)
+{
+    for (int n : graph[v])
+    {
+        if (visited.find(n) == visited.end())
+        {
+            visited.insert({ n, -color });
+            if (!colorGraph(graph, n, -color, visited))
+                return false;
+        }
+        else
+        {
+            if (visited[n] == color)
+                return false;
+        }
+    }
+    return true;
+}
+
+bool isBipartite(vector<vector<int>>& graph) {
+    unordered_map<int, int> visited;
+
+    for (int i = 0; i < graph.size(); i++)
+    {
+        if (visited.find(i) == visited.end())
+        {
+            visited.insert({ i, 1 });
+            if (!colorGraph(graph, i, 1, visited))
+                return false;
+        }
+    }
+    return true;
+}
+/* Graph Coloring: 2.Check if graph can be colored with 3 colors
+ * @param graph: graph presented in adjacency list
+ * @param v: current vertix
+ * @param colors: input vector of colors
+ * @param color: color of current vertix
+ * @param visited: visited vertices set
+ * @return: bool if graph can be colored
+ */
 
 
 /*3 Variant Examples for permutation function :
