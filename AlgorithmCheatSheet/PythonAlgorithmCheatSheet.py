@@ -107,6 +107,10 @@ def arange_test():
     print(x)
 
 
+x = np.array([3,1,2])
+y = np.argsort(x)
+print(y)
+
 ##############################
 # Mat plot
 ###############################
@@ -123,6 +127,3 @@ def sinus_plot_test():
     plt.ylabel('y')
     plt.legend(['Sine', 'Cosine'])
     plt.show()
-
-
-sinus_plot_test()

@@ -993,13 +993,26 @@ void rotateImage(vector<vector<int>>& A, bool CCW = false)
         reverse(A.begin(), A.end());
 }
 
-//Euclidean distance between two points in 2d
+//Euclidean distance between two points in 2d (l2 norm)
 // sqrt( (x2-x1)^2 + (y2-y1)^2)
-int distance(pair<int, int> p1, pair<int, int> p2)
+int euclideanDistance(pair<int, int> p1, pair<int, int> p2)
 {
     double deltax_squared = pow(p2.first - p1.first, 2);
     double deltay_squared = pow(p2.second - p1.second, 2);
     return (int)(sqrt(deltax_squared + deltay_squared));
+}
+//Manhatten distance between two points (l1 norm)
+// |x2-x1| + |y2-y1|
+int manhattenDistance(pair<int, int> p1, pair<int, int> p2)
+{
+    return abs(p1.first - p2.first) + abs(p2.second - p2.second);
+}
+
+//Chebychev distance between two points (kings move)
+// max(|x2-x1|, |y2-y1|)
+int manhattenDistance(pair<int, int> p1, pair<int, int> p2)
+{
+    return max( abs(p1.first - p2.first), abs(p2.second - p2.second));
 }
 
 //Dot product 
