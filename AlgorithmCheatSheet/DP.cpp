@@ -157,17 +157,19 @@ int longestIncreasingSubsequence(const vector<int>& A)
     return dp[A.size() - 1];
 }
 
-
+/* Classic 0/1 knapsack problem
+ * Maximize values in knapsack with weights less or equal to capacity. Items are used only once!
+ */
 int knapsack(vector<int> values, vector<int> weights, int capacity)
 {
     vector<vector<int>> dp(values.size() + 1, vector<int>(capacity + 1));
 
-    for (int i = 0; i < values.size(); i++)
+    for (size_t i = 0; i < values.size(); i++)
     {
         int w = weights[i];
         int v = values[i];
 
-        for (int j = 1; j <= capacity; j++)
+        for (size_t j = 1; j <= capacity; j++)
         {
             dp[i + 1][j] = dp[i][j];
 
@@ -178,4 +180,96 @@ int knapsack(vector<int> values, vector<int> weights, int capacity)
         }
     }
     return dp[values.size()][capacity];
+}
+/* Reconstruct items taken in the knapsack 
+ * 
+ */
+vector<int> reconstructKnapsack(vector<vector<int>> dp, vector<int> values, vector<int> weights)
+{
+    vector<int> items;
+
+    int r = dp.size() - 1;
+    int c = dp[0].size() - 1;
+
+    while (r > 0 && c > 0)
+    {
+        if (dp[r - 1][c] == dp[r][c])
+        {
+            r--;
+        }
+        else
+        {
+            items.push_back(r);
+            c = c - weights[r - 1];
+            r--;
+        }
+    }
+    
+    return items;
+}
+
+/* 1D Knapsack no repetition
+ */
+int knapsack1DnoRep(vector<int> values, vector<int> weights, int capacity)
+{
+    vector<int> dp(capacity + 1);
+
+    for (int i = 0; i < values.size(); i++)
+    {
+        int v = values[i];
+        int w = weights[i];
+
+        // iterate in reverse to not include item several times
+        for (int j = capacity - w; j >= 0; j--)
+            dp[j+w] = max(dp[j]+v, dp[j + w]);
+    }
+
+    return dp[capacity];
+}
+
+/* 1D Knapsack with repetition (like coin change problem)
+ */
+int knapsack1DwithRep(vector<int> values, vector<int> weights, int capacity)
+{
+    vector<int> dp(capacity + 1);
+
+    for (int i = 0; i < values.size(); i++)
+    {
+        int v = values[i];
+        int w = weights[i];
+
+        // iteratation includes repetition
+        for (int j = 0; j <= capacity - w; j++)
+            dp[j+w] = max(dp[j]+v, dp[j + w]);
+    }
+
+    return dp[capacity];
+}
+/* Knapsack but with weights up to 1e9
+* The idea is to flip the dp[capacity] = max_value to dp[value] = min_capactiy
+*/
+int knapsackWeights(vector<int> values, vector<int> weights, int capacity)
+{
+    int sum_values = 0;
+    for (int i : values)
+        sum_values += i;
+
+    vector<int> dp(sum_values + 1, 1e9+1);
+
+    for (int i = 0; i < values.size(); i++)
+    {
+        int v = values[i];
+        int w = weights[i];
+
+        // iterate in reverse to not include item several times
+        for(int j = sum_values - v; j >= 0; j--)
+            dp[j+v] = min(dp[j]+w, dp[j + v]);
+    }
+
+    for (int i = dp.size() - 1; i >= 0; i--)
+    {
+        if (dp[i] <= capacity)
+            return i;
+    }
+    return 0;
 }

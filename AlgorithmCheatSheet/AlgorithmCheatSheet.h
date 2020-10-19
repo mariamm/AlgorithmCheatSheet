@@ -1010,7 +1010,7 @@ int manhattenDistance(pair<int, int> p1, pair<int, int> p2)
 
 //Chebychev distance between two points (kings move)
 // max(|x2-x1|, |y2-y1|)
-int manhattenDistance(pair<int, int> p1, pair<int, int> p2)
+int chebychevDistance(pair<int, int> p1, pair<int, int> p2)
 {
     return max( abs(p1.first - p2.first), abs(p2.second - p2.second));
 }
