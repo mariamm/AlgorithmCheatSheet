@@ -234,27 +234,27 @@ struct DP
     */
     int knapsackWeights(vector<int> values, vector<int> weights, int capacity)
     {
-        int sum_values = 0;
+        size_t sum_values = 0;
         for (int i : values)
             sum_values += i;
 
-        int INF = 1e9 + 1;
+        int INF = (int) 1e9 + 1;
         vector<int> dp(sum_values + 1, INF);
 
-        for (int i = 0; i < values.size(); i++)
+        for (size_t i = 0; i < values.size(); i++)
         {
             int v = values[i];
             int w = weights[i];
 
             // iterate in reverse to not include item several times
-            for(int j = sum_values - v; j >= 0; j--)
+            for(size_t j = sum_values - v; j-- > 0;)
                 dp[j+v] = min(dp[j]+w, dp[j + v]);
         }
 
-        for (int i = dp.size() - 1; i >= 0; i--)
+        for (size_t i = dp.size() - 1; i-- > 0;)
         {
             if (dp[i] <= capacity)
-                return i;
+                return (int)i;
         }
         return 0;
     }
@@ -301,22 +301,22 @@ struct DP
     */
     double coinsMoreHeads(vector<double> probabilities)
     {
-        int N = probabilities.size() + 1;
+        size_t N = probabilities.size() + 1;
         vector<vector<double>> dp(N, vector<double>(N)); //i index j heads so far
         dp[0][0] = 1.0; //initial probability of having 0 heads with 0 tosses is 1.0
-        for (int i = 1; i < N; i++)
+        for (size_t i = 1; i < N; i++)
         {
             double pHead = probabilities[i - 1];
             double pTail = 1.0 - pHead;
             dp[i][0] = dp[i - 1][0] * pTail; // j=0 heads means toss at i is tails
-            for (int j = 1; j <= i; j++)
+            for (size_t j = 1; j <= i; j++)
             {
                 dp[i][j] = dp[i - 1][j - 1] * pHead + dp[i - 1][j] * pTail;
             }
 
         }
         double sum = 0.;
-        for (int i = (N + 1) / 2; i < dp.size(); i++)
+        for (size_t i = (N + 1) / 2; i < dp.size(); i++)
             sum += dp[N][i];
 
         return sum;
