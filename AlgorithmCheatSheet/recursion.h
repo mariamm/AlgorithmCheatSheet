@@ -14,6 +14,22 @@ struct SudokuSolver
 	vector<unordered_set<int>> cols;  //set for every column in board
 	vector<unordered_set<int>> boxes; //set for every box, linearized
 	vector<pair<int, int>> todo;	  //empty cells to be filled
+
+	SudokuSolver()
+	{
+		//demo board
+		vector<vector<int>> board = {
+			{7,5,0,2,8,0,0,3,0},
+			{8,1,0,0,0,9,7,2,5},
+			{3,0,2,7,1,5,0,8,9},
+			{0,2,1,0,0,8,0,4,0},
+			{5,0,8,0,0,0,2,0,0},
+			{4,3,0,0,2,0,0,0,8},
+			{0,0,0,0,0,0,8,0,0},
+			{0,8,0,0,4,1,9,5,2},
+			{0,0,0,8,0,2,0,0,0}
+		};
+	}
 	SudokuSolver(vector<vector<int>>& b) {
 		board = b;
 		rows.resize(9);
@@ -104,4 +120,8 @@ struct SudokuSolver
 		}
 		cout << "---------------------" << endl;
 	}
+
+	/*
+	
+		*/
 };
