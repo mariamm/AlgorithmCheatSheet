@@ -182,3 +182,18 @@ TEST(Permutations, Variant3)
 		}
 	}
 }
+
+TEST(ShortestPaths, Dijkstra)
+{
+	vector<vector<vector<int>>> adjList= { {{1, 4}, {2, 1}},
+											{{3,1}},
+											{{1, 2}, {3,5}},
+											{{4,3}},
+											{} };
+
+
+	int dist = dijkstraShortestPath(adjList, 4);
+
+	EXPECT_EQ(dist, 7);
+	
+}

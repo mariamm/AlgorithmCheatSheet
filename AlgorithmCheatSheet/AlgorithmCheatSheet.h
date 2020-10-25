@@ -725,6 +725,42 @@ void BFS(int s, map<int, vector<int>> adj, int t)
     }
 }
 
+/* Dijkstra 
+ * Lazy implementation using a regular priority queue (eager implementation uses indexed priority queue)
+ * @param adjList : weighted adjacency list of the graph (only positive weights)
+ * @param N: vertices, 0 indexed
+ * @return: shortest distance from node 0 to N-1
+ */
+
+int dijkstraShortestPath(vector<vector<vector<int>>> adjList, int N)
+{
+    assert(adjList.size() == N+1 && "Adjacency List must equal vertices N");
+    vector<int> dist(N+1, INT_MAX);
+    //using priority queue in lazy implementation
+    priority_queue<pair<int, int>, vector<pair<int,int>>, greater<pair<int,int>>> pq; //pair: distance, vertex
+    //initial state
+    dist[0] = 0; //starting at vertex 0
+    pq.emplace(0, 0);
+    
+    while (!pq.empty())
+    {
+        //poll best distance pair
+        pair<int, int> p = pq.top();
+        pq.pop();
+        if (dist[p.second] < p.first) //node visited already
+            continue;
+        //else visit node
+        for (vector<int> neighbor : adjList[p.second])
+        {
+            int distToNeighbor = p.first + neighbor[1];
+            dist[neighbor[0]] = min(dist[neighbor[0]], distToNeighbor);
+            pq.emplace(distToNeighbor, neighbor[0]);
+        }
+    }
+
+    return dist[N];
+
+}
 //Topological sort of a DAG (directed acyclic graph)
 vector<int> kahnsort(vector<vector<int>>& graph)
 {
