@@ -47,7 +47,7 @@ struct TreeNode
 struct LinkedList
 {
     ListNode* head;  //front
-    ListNode* tail;	 //back
+    ListNode* tail;     //back
 
     ~LinkedList() { /* delete nodes from head to end, NULL ptr*/ }
     LinkedList() { head = NULL; tail = NULL; }
