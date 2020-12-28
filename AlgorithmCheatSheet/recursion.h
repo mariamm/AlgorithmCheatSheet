@@ -12,7 +12,7 @@ struct SudokuSolver
     vector<vector<int>> board;
     vector<unordered_set<int>> rows;  //set for every row in board
     vector<unordered_set<int>> cols;  //set for every column in board
-    vector<unordered_set<int>> boxes; //set for every box, linearized
+    vector<unordered_set<int>> boxes; //set for every box
     vector<pair<int, int>> todo;      //empty cells to be filled
 
     SudokuSolver()
@@ -43,14 +43,25 @@ struct SudokuSolver
                 else{
                     rows[i].insert(b[i][j]);
                     cols[j].insert(b[i][j]);
-
-                    int idx = (i / 3) * 3 + j / 3; //linearized box index
-                    boxes[idx].insert(b[i][j]);
+                    boxes[idx(i, j)].insert(b[i][j]);
                 }
             }
         }
     }
+    int idx(int r, int c)
+    {
+        //box 0: rows 012, cols 012 --> 0 * 3 + 0
+        //box 1: rows 012, cols 345 --> 0 * 3 + 1
+        //box 2: rows 012, cols 678 --> 0 * 3 + 2
+        //box 3: rows 345, cols 012 --> 1 * 3 + 0
+        //box 4: rows 345, cols 345 --> 1 * 3 + 1
+        //box 5: rows 345, cols 678 --> 1 * 3 + 2
+        //box 6: rows 678, cols 012 --> 2 * 3 + 0
+        //box 7: rows 678, cols 345 --> 2 * 3 + 1
+        //box 8: rows 678, cols 678 --> 2 * 3 + 2
 
+        return (r / 3) * 3 + c / 3;
+    }
     bool validEntry(int r, int c, int num)
     {
         if (rows[r].find(num) != rows[r].end())
@@ -59,9 +70,7 @@ struct SudokuSolver
         if (cols[c].find(num) != cols[c].end())
             return false;
 
-        int idx = (r / 3) * 3 + c / 3;
-
-        if (boxes[idx].find(num) != boxes[idx].end())
+        if (boxes[idx(r,c)].find(num) != boxes[idx(r, c)].end())
             return false;
 
         return true;
@@ -74,7 +83,6 @@ struct SudokuSolver
 
         int r = todo[todoIndex].first;
         int c = todo[todoIndex].second;
-        int idx = (r / 3) * 3 + c / 3;
         for (int i = 1; i <= 9; i++)
         {
             if (validEntry(r, c, i))
@@ -82,7 +90,7 @@ struct SudokuSolver
                 board[r][c] = i;
                 rows[r].insert(i);
                 cols[c].insert(i);
-                boxes[idx].insert(i);
+                boxes[idx(r,c)].insert(i);
                 if (recurseSolve(todoIndex + 1))
                     return true;
                 else
@@ -90,7 +98,7 @@ struct SudokuSolver
                     board[r][c] = 0;
                     rows[r].erase(i);
                     cols[c].erase(i);
-                    boxes[idx].erase(i);
+                    boxes[idx(r, c)].erase(i);
                 }
             }
         }

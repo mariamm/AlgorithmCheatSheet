@@ -930,16 +930,69 @@ bool isBipartite(vector<vector<int>>& graph) {
     }
     return true;
 }
-/* Graph Coloring: 2.Check if graph can be colored with 3 colors
+/* Graph Coloring: 2.Check if graph can be colored with 3 colors. 
  * @param graph: graph presented in adjacency list
  * @param v: current vertix
  * @param colors: input vector of colors
  * @param color: color of current vertix
- * @param visited: visited vertices set
+ * @param visited_color: visited vertices map and their color
  * @return: bool if graph can be colored
  */
 
+bool colorGraph2(vector<vector<int>>& graph, int v, vector<int> colors, int c, unordered_map<int, int> visited_color)
+{
+    for (int n : graph[v])
+    {
+        if (visited_color.find(n) == visited_color.end()) //neighbor not visited yet
+        {
+            for (int i = 0; i < colors.size(); i++)
+            {
+                if (i == c)
+                    continue; //skip same color
+                visited_color[n] = i;
+                if (colorGraph2(graph, n, colors, i, visited_color) == false)
+                {
+                    //remove set color (to try next color)
+                    visited_color.erase(n);
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+        else if (visited_color[n] == c)
+            return false;
 
+    }
+    return true;
+}
+bool colorGraph2Main(vector<vector<int>>& graph, vector<int> colors)
+{
+    //Assuming a connected graph
+    unordered_map<int, int> visited_color;
+    for (int i = 0; i < graph.size(); i++)
+    {
+        //color not visited nodes
+        if (visited_color.find(i) == visited_color.end())
+        {
+            for (int c = 0; c < colors.size(); c++)
+            {
+                visited_color[i] = c;
+                if (colorGraph2(graph, i, colors, c, visited_color))
+                {
+                    break; //found correct color
+                }
+                else
+                {
+                    visited_color.erase(i);
+                }
+            }
+        }
+
+    }
+    return visited_color.size() == graph.size();
+}
 /*3 Variant Examples for permutation function :
  * Given a collection of numbers, return all possible permutations. Aka Heap's algorithm.
  * @param num : initial vector
