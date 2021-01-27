@@ -23,12 +23,16 @@ add_executable(${CMAKE_PROJECT_NAME}
 )
 
 
+#set(GTestPath "" CACHE FILEPATH "Gtest path")
+#set (GTEST_ROOT ${GTestPath})
 
 #Testing
-enable_testing()
 #find_package(GTest REQUIRED)
 #include_directories(${GTEST_INCLUDE_DIRS})
-#add_executable( runUnitTests test.cpp)
+#add_executable( GTests test.cpp)
 
-#target_link_libraries(runUnitTests ${GTEST_BOTH_LIBRARIES})
-#add_test( runUnitTests runUnitTests )
+#target_link_libraries(GTests ${GTEST_BOTH_LIBRARIES})
+#add_test( GTests GTests )
+
+#No zero-check
+set(CMAKE_SUPPRESS_REGENERATION true)
