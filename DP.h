@@ -1,7 +1,7 @@
 #include "Common.h"
 
 /* Random collection of DP problems*/
-struct DP
+namespace DP
 {
     /*
      * Longest increasing subsequence in an array

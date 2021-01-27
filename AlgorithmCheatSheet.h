@@ -266,19 +266,6 @@ TreeNode* createTree(const vector<int>& v)
 }
 
 
-///////////////////////////////////////////////
-/////// Pretty Print //////////////////////////
-///////////////////////////////////////////////
-
-void print2dVector(vector<vector<int>>& input)
-{
-    for (vector<int> v : input)
-    {
-        for (int i : v)
-            cout << i << ", ";
-        cout << endl;
-    }
-}
 //Char conversions
 char intToChar(int i)
 {
@@ -800,11 +787,107 @@ vector<int> kahnsort(vector<vector<int>>& graph)
             return vector<int>(); //graph has a cycle,
     }*/
     //alternatively check added nodes in the output,should match the number of vertices
-    if(sorted.size() != graph.size()) return vector<int>();
+    if(sorted.size() != graph.size()) 
+        return vector<int>();
     
     return sorted;
 }
 
+void modifiedDfs(vector<vector<int>>& adjList, vector<int>& solution, int v, vector<int> &outdegrees)
+{
+    //visit all edges in adjList[v];
+    //infinite loop
+    /*for (int n : adjList[v])
+    {
+        if (outdegrees[v] == 0)
+            break;
+        modifiedDfs(adjList, solution, n, outdegrees);
+        outdegrees[v]--;
+    }*/
+
+    while (outdegrees[v] != 0)
+    {
+        int next_edge = adjList[v][--outdegrees[v]];
+        modifiedDfs(adjList, solution, next_edge, outdegrees);
+    }
+    solution.push_back(v);
+}
+
+/* Hierholzer Algorithm (Finding Euerlian Path in a directed graph)
+ * Eulerian path: a path which visits every edge in a graph exactly once
+ * Alg. description: modified DFS to visit all edges in the graph by using outdegree edges to keep track of unvisited edges.
+ * @param adjList: Graph
+ * @param N: number of vertices
+ * @return: vector of vertices depicting the path, returns empty vector if path doesn't exist.
+ */
+vector<int> hierholzerEulerianPath(vector<vector<int>>& adjList, int N)
+{
+    //Step one, verify that graph has a eulerian path
+    //Conditions: indegrees & outdegrees of every vertex is equal, or two vertex where one has additional outdegree and the other an additional indegree
+
+    vector<int>indegrees(N);
+    vector<int>outdegrees(N);
+
+    for (int i = 0; i < N; i++)
+    {
+        outdegrees[i] = adjList[i].size();
+        for (int n : adjList[i])
+        {
+            indegrees[n]++;
+        }
+    }
+
+    int startNode = 0;
+    int diffout = 0;
+    int diffin = 0;
+    for (int i = 0; i < N; i++)
+    {
+        int diff = outdegrees[i] - indegrees[i];
+        if (diff == 0)
+            continue;
+        else if (diff == -1)
+            diffin++;
+        else if (diff == 1)
+        {
+            startNode = i;
+            diffout++;
+        }
+        else
+            return vector<int>();
+    }
+
+    auto valid = [=]()
+    {
+        return (diffin == 0 && diffout == 0) //circuit
+            || (diffin == 1 && diffout == 1);
+    };
+
+    if (!valid())
+        return vector<int>();
+
+
+    //Step 2, make sure we have a startNode with outgoing edge if not found previously with the unique outdegree +1
+    if (startNode == 0)
+    {
+        for (int i = 0; i < outdegrees.size(); i++)
+        {
+            if (outdegrees[i] > 0)
+            {
+                startNode = i;
+                break;
+            }
+        }
+    }
+
+    //Step 3, run modified dfs 
+    vector<int> solution;
+    modifiedDfs(adjList, solution, startNode, outdegrees);
+
+    //the solution must be reversed, because the algorithm should add the vertex in the front of the solution. I used push_back in modifiedDfs for optimization
+    reverse(solution.begin(), solution.end());
+
+    return solution;
+}
 /* Prim's Minimum Spanning Tree algorithm
  * @param edges: vector of vectors containing e edges in the graph. vector e[0] start node, e[1] end node, e[2] weight
  * @param N: Number of vertices

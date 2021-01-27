@@ -18,3 +18,25 @@ using namespace std;
 //C++ 14 : return type deduction, binary lieterals, generic lambdas decle types
 //C++ 17 : structured binding, nested namesapces, inline variables, constexpr lamdas
 //C++ 20 : 
+
+///////////////////////////////////////////////
+/////// Pretty Print //////////////////////////
+///////////////////////////////////////////////
+
+void print2dVector(vector<vector<int>>& input)
+{
+    for (vector<int> v : input)
+    {
+        for (int i : v)
+            cout << i << ", ";
+        cout << endl;
+    }
+}
+
+void printVector(vector<int>& input)
+{
+    for (int i : input)
+    {
+            cout << i << ", ";
+    }
+}
