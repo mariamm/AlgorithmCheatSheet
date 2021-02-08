@@ -600,19 +600,19 @@ struct SegmentTree
             return operation(rangeQueryHelper(low, mid, qlow, qhigh, 2*pos+1), rangeQueryHelper( mid+1, high, qlow, qhigh, 2*pos + 2));  
         } 
 
-    int getSize(int inputSize)
-    {
-        int n = 0;
-        for (int i = 0, base = 1; i < 32; i++, base *= 2)
+        int getSize(int inputSize)
         {
-            if (base >= inputSize)
+            int n = 0;
+            for (int i = 0, base = 1; i < 32; i++, base *= 2)
             {
-                n = 2 * base - 1;
-                break;
+                if (base >= inputSize)
+                {
+                    n = 2 * base - 1;
+                    break;
+                }
             }
+            return n; 
         }
-        return n; 
-    }
 };
 
 ////////////////////////////////////////////
@@ -1177,7 +1177,7 @@ int euclideanDistance(pair<int, int> p1, pair<int, int> p2)
 // |x2-x1| + |y2-y1|
 int manhattenDistance(pair<int, int> p1, pair<int, int> p2)
 {
-    return abs(p1.first - p2.first) + abs(p2.second - p2.second);
+    return abs(p1.first - p2.first) + abs(p1.second - p2.second);
 }
 
 //Chebychev distance between two points (kings move)
@@ -1322,6 +1322,72 @@ void convolution2d(vector<vector<int>> A, vector<vector<int>> kernal, bool zerop
 }
 
 */
+
+vector<vector<int>> matrix_transpose(vector<vector<int>>& matrix)
+{
+    if (matrix.empty() || matrix[0].empty())
+        return vector<vector<int>>();
+
+    int rows = matrix.size();
+    int cols = matrix[0].size();
+
+    vector<vector<int>> transpose(cols, vector<int>(rows));
+
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            transpose[j][i] = matrix[i][j];
+        }
+    }
+    return transpose;
+}
+
+vector<vector<int>> matrix_reflect_cols(vector<vector<int>>& matrix)
+{
+    if (matrix.empty() || matrix[0].empty())
+        return vector<vector<int>>();
+
+    vector<vector<int>> reflect(matrix.size(), vector<int>(matrix[0].size()));
+
+    for (int i = 0; i < matrix.size(); i++)
+    {
+        for (int j = 0; j < matrix[0].size(); j++)
+        {
+            reflect[i][j] = matrix[i][matrix[0].size() - j - 1];
+        }
+    }
+
+    return reflect;
+}
+
+vector<vector<int>> matrix_reflect_rows(vector<vector<int>>& matrix)
+{
+    if (matrix.empty() || matrix[0].empty())
+        return vector<vector<int>>();
+
+    vector<vector<int>> reflect(matrix.size(), vector<int>(matrix[0].size()));
+
+    for (int i = 0; i < matrix.size(); i++)
+    {
+        for (int j = 0; j < matrix[0].size(); j++)
+        {
+            reflect[i][j] = matrix[matrix.size() - i - 1][j];
+        }
+    }
+
+    return reflect;
+}
+
+vector<vector<int>> rotateImage2(vector<vector<int>>& matrix, bool CCW = false)
+{
+    vector<vector<int>> rotated = matrix_transpose(matrix);
+    if (CCW)
+        rotated = matrix_reflect_rows(rotated);
+    else
+        rotated = matrix_reflect_cols(rotated);
+    return rotated;
+}
 ////////////////////////////////////////////
 ////////////   Mathematics    //////////////
 ////////////////////////////////////////////

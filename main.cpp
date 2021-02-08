@@ -6,17 +6,9 @@
 
 int main()
 { 
-    vector<vector<int>> adjList = { 
-        {},
-        {2, 3},
-        {2, 4, 4},
-        {1, 2, 5}, 
-        {3, 6},
-        {6},
-        {3},
-    };
-    vector<int> solution = hierholzerEulerianPath(adjList, 7);
-    printVector(solution);
+    vector<vector<int>> adjList = { {1, 2}, {3, 4}, {5, 6}};
+    vector<vector<int>> rotated = rotateImage2(adjList, true);
+    print2dVector(rotated);
     int x;
     cin >> x;
 } 
