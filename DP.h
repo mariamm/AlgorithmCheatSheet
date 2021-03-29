@@ -3,6 +3,71 @@
 /* Random collection of DP problems*/
 namespace DP
 {
+    // Geeks for geeks list
+
+    /*1. Ugly numbers
+     * Ugly numbers are numbers whose only prime factors are 2, 3 or 5
+     */
+    int uglyNumbers(int n)
+    {
+        set<int> ugly;
+        ugly.insert(1);
+        while (n)
+        {
+            int first = *ugly.begin();
+
+            ugly.erase(first);
+
+            ugly.insert(first * 2);
+            ugly.insert(first * 3);
+            ugly.insert(first * 5);
+            n--;
+        }
+        return *ugly.begin();
+    }
+    /* 2. Fibonacci 
+    * return nth fibonacci number
+    */ 
+    int fib(int n) { 
+        if (n < 2)
+            return n;
+        int d1 = 0;
+        int d2 = 1;
+
+        for (int i = 2; i <= n; i++)
+        {
+            int temp = d2;
+            d2 += d1;
+            d1 = temp;
+        }
+        return d2;
+    }
+
+    /*
+    * Catalan number:
+    * E.g. number of paths, number of trees
+        C0=1 \ and \ Cn+1= sum{i:n}Ci * Cn-i  for n >= 0;    
+    */
+    int catalanNumber(int n)
+    {
+        if (n < 2)
+            return n;
+        vector<int> dp(n + 1);
+        dp[0] = 1;
+        dp[1] = 1;
+        for (int i = 2; i <= n; i++)
+        {
+            for (int j = 0; j < i; j++)
+            {
+                dp[i] += dp[j] * dp[i-j-1];
+            }
+        }
+        return dp[n];
+    }
+
+    /* Bell number
+    * E.g.: Number of ways to partition a set
+    */
     /*
      * Longest increasing subsequence in an array
      * Example {1, 2, 3, 0, 4, 1, 5, 3} -> 1, 2, 3, 4, 5 -> 5
@@ -39,6 +104,12 @@ namespace DP
             }
         }
         return dp[a.length()][b.length()];
+    }
+    string longestCommonSubsequenceReconstructed(string a, string b)
+    {
+        string s = ""; 
+         
+        return s;
     }
 
     //find if sum can be reached given following elements (not the same as coin problem, where coins are unlimited)
@@ -322,3 +393,4 @@ namespace DP
         return sum;
     }
 };
+

@@ -6,9 +6,13 @@
 
 int main()
 { 
-    vector<vector<int>> adjList = { {1, 2}, {3, 4}, {5, 6}};
-    vector<vector<int>> rotated = rotateImage2(adjList, true);
-    print2dVector(rotated);
-    int x;
-    cin >> x;
+	string a = "abicideffgi";
+	string b = "axbcxdefegx";
+	string c = "abcdefg";
+
+	int longest = DP::longestCommonSubsequence(a, b);
+	string test = DP::longestCommonSubsequenceReconstructed(a, b);
+
+	cout << c << endl << test << endl<<longest;
+	return 0;
 } 
