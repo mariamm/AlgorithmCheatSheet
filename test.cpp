@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "AlgorithmCheatSheet.h"
+#include "Geometry.h"
 
 TEST(Char_Conversions, UpperCase)
 {
