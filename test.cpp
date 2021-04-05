@@ -218,3 +218,32 @@ TEST(Graphs, HierHolzerEuelerianPath)
         EXPECT_EQ(solution[i], test[i]);
     }
 }
+
+TEST(Geometry, OnDiagonal)
+{
+    //board 3x3 
+    /* 
+       |__|__|__|
+       |__|__|__|
+       |__|__|__|
+    */
+    vector<vector<pair<int, int>>> diagonals = {
+        {{0,0},{1,1}}, {{0,0},{2,2}}, {{1,1},{2,2}},
+        {{1,0},{2,1}}, {{0,1},{1,0}},
+        {{0,1},{1,0}}, {{1,2},{2,1}},
+        {{0,2},{1,1}}, {{0,2},{2,0}}, {{1,1},{2,0}},
+    };
+    vector<vector<pair<int, int>>> non_diagonals = {
+        {{0,0},{0,1}}, {{0,0},{1,2}}, {{1,1},{1,0}},
+        {{1,0},{1,1}}, {{0,1},{2,2}}, {{1,2},{0,2}}
+    };
+
+    for (vector<pair<int, int>> ps : diagonals)
+    {
+        EXPECT_TRUE(onDiagonal(ps[0], ps[1]));
+    }
+    for (vector<pair<int, int>> ps : non_diagonals)
+    {
+        EXPECT_FALSE(onDiagonal(ps[0], ps[1]));
+    }
+}

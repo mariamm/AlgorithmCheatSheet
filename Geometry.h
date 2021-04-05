@@ -211,3 +211,18 @@ void create2DPolygon(int sides, vector<vector<float>> &vertices, vector<vector<i
         }
     }
 }
+
+/*
+  Check if two points are on diagonals or anti diagonals of square board
+*/
+bool onDiagonal(pair<int, int> c1, pair<int, int> c2)
+{
+    //check / diagonal (rows+cols) 
+    if ((c1.first + c1.second) == (c2.first + c2.second))
+        return true;
+    //check \ anti-diagonal (rows-cols)
+    if ((c1.first - c1.second) == (c2.first - c2.second))
+        return true;
+
+    return false;
+}
