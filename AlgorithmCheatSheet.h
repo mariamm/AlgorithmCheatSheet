@@ -1328,3 +1328,23 @@ std::uniform_real_distribution<double> unifrom(lowerBound, UpperBound);
 std::default_random_engine re;
 
 */
+
+/*
+* Nested weighted sum? Not sure what to call it.
+* Simplified: multiplying the current value with its depth, find the maximum if you can start at any level
+* The idea is to use a prefix sum (iterating backwards) and (re)add it at every iteration to simulate the depth multiplication
+* Example problems: LC 339. Nested List Weight Sum, LC 1402. Reducing Dishes
+*/ 
+int maximumStartingAtAnyDepth(vector<int> arr)
+{
+    int prefixsum = 0;
+    int currentsum = 0;
+    int maxsum = 0;
+
+    for (int i = arr.size() - 1; i >= 0; i--)  {
+        prefixsum += arr[i];
+        currentsum += prefixsum; //with every iteration prefix sum gets added again with the first added element being added i times
+        maxsum = max(maxsum, currentsum);
+    }
+    return maxsum;
+}
