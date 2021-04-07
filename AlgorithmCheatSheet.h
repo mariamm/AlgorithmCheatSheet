@@ -265,7 +265,6 @@ TreeNode* createTree(const vector<int>& v)
     return root;
 }
 
-
 //Char conversions
 char intToChar(int i)
 {
@@ -291,6 +290,11 @@ char lowertoUpperCase(char lc)
     return lc - 'a' + 'A';
 }
 
+bool isVowel(char c)
+{
+    string vowels = "AEIOUaeiou";
+    return vowels.find(c) != string::npos;
+}
 ////////////////////////////////////////////
 ////////////   Strings        //////////////
 ////////////////////////////////////////////
