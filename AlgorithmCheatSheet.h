@@ -141,6 +141,27 @@ class Trie {
         }
         return current->isCompleteWord;
     }
+
+    //From leetcode #745
+    //prefix sufix combination
+    void addWords(const vector<string> &words)
+    {
+        for (int i = 0; i < words.size(); i++)
+        {
+            for (int j = words[i].size(); j >= 0; j--)
+            {
+                //#test", "t#test", "st#test", "est#test", "test#test"
+                string subst = words[i].substr(j);
+                string temp = subst + "#" + words[i]; 
+                this->addWord(temp);
+            }
+        }
+    }
+    //filter by prefix and suffix
+    bool findPrefixSuffix(string prefix, string suffix)
+    {
+        return this->isPrefix(suffix + "#" + prefix);
+    }
 };
 
 //DSU: Disjoint - Set - Union
@@ -1159,10 +1180,13 @@ void rotateImage(vector<vector<int>>& A, bool CCW = false)
 {
     //counter clockwise : swap first, then reverse
     if (!CCW)
-        reverse(A.begin(), A.end());
+        reverse(A.begin(), A.end()); 
     for (size_t i = 0; i < A.size(); i++)
         for (size_t j = i + 1; j < A[0].size(); j++)
+        {
             swap(A[i][j], A[j][i]);
+            print2dVector(A);
+        }
     if (CCW)
         reverse(A.begin(), A.end());
 }

@@ -31,12 +31,13 @@ void print2dVector(vector<vector<int>>& input)
             cout << i << ", ";
         cout << endl;
     }
+    cout << "----------------------"<<endl;
 }
 
 void printVector(vector<int>& input)
 {
     for (int i : input)
     {
-            cout << i << ", ";
+        cout << i << ", ";
     }
 }
