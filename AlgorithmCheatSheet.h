@@ -736,7 +736,38 @@ void BFS(int s, map<int, vector<int>> adj, int t)
         }
     }
 }
-
+/* Bellman-Ford
+* @param edgesList: List of all edges in the graph [u,v,w] edge between u,v with weight w
+* @param N: number of vertices
+* @return: shortest distance from 0 to N-1
+* Runtime: O(V*E)
+*/
+int bellmanFordShortestPath(vector<vector<int>> edgesList, int N)
+{
+    //Steps: 
+    // Initialize with inf value and p -1
+    // For every edge, relax distance
+    // for every edge find negative cycle
+    const int INF = 1e9;
+    vector<int> d(N, INF);
+    d[0] = 0; //d[Start]
+    vector<int> p(N, -1);
+    for(int i=0; i<N; i++) {
+        for (vector<int> e : edgesList) {
+            if (d[e[1]] > d[e[0]] + e[2]) {
+                d[e[1]] = d[e[0]] + e[2];
+                p[e[1]] = e[0];
+            }
+        }
+    }
+    for(int i=0; i<N; i++) {
+        for (vector<int> e : edgesList) {
+            if (d[e[1]] > d[e[0]] + e[2])
+                d[e[1]] = -INF; //negative cycle
+        }
+    }
+    return d[N - 1];
+}
 /* Dijkstra 
  * Lazy implementation using a regular priority queue (eager implementation uses indexed priority queue)
  * @param adjList : weighted adjacency list of the graph (only positive weights)
@@ -1265,7 +1296,7 @@ vector<vector<int>> rotateImage2(vector<vector<int>>& matrix, bool CCW = false)
 unsigned long long int factorial(int n, int start = 1)
 {
     unsigned long long int fac = 1;
-    for (int i = start + 1; i <= n; i++)
+    for (int i = start; i <= n; i++)
         fac *= i;
     return fac;
 }

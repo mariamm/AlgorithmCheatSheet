@@ -198,6 +198,25 @@ TEST(ShortestPaths, Dijkstra)
     EXPECT_EQ(dist, 7);
     
 }
+TEST(ShortestPaths, BellmanFord)
+{ 
+    int N = 5;
+    vector<vector<int>> edges;
+    edges.push_back({ 0,1,6 });
+    edges.push_back({ 0,4,7 });
+    edges.push_back({ 1,2,5 });
+    edges.push_back({ 1,3,-4 });
+    edges.push_back({ 1,4,8 });
+    edges.push_back({ 2,1,-2 });
+    edges.push_back({ 3,2,7 });
+    edges.push_back({ 3,0,2 });
+    edges.push_back({ 4,3,9 });
+    edges.push_back({ 4,2,-3 });
+    int dist = bellmanFordShortestPath(edges, 5);
+
+    EXPECT_EQ(dist, 7);
+
+}
 
 TEST(Graphs, HierHolzerEuelerianPath)
 {
@@ -246,4 +265,17 @@ TEST(Geometry, OnDiagonal)
     {
         EXPECT_FALSE(onDiagonal(ps[0], ps[1]));
     }
+}
+
+TEST(Math, Factorial)
+{
+     
+    vector<unsigned long long int> nums = { 1,2,3,4,5,6 };
+    vector<unsigned long long int> ans = { 1, 2, 6, 24, 120, 720 };
+
+    for (int i = 0; i < nums.size(); i++)
+    {
+        auto n = factorial(nums[i]);
+        EXPECT_EQ(n, ans[i]);
+    } 
 }
