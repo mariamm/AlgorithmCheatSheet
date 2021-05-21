@@ -1,6 +1,9 @@
 #include "gtest/gtest.h"
 #include "AlgorithmCheatSheet.h"
+#include "Common.h"
 #include "Geometry.h"
+#include "Recursion.h"
+#include "DP.h"
 
 TEST(Char_Conversions, UpperCase)
 {
@@ -23,14 +26,23 @@ TEST(Char_Conversions, Lowercase)
     }
 }
 
-TEST(String, KMP_SUBSTRING1)
+TEST(Strings, KMP)
+{
+    string s = "Hello World";
+    string b = "World";
+    int i = kmpSubstring(s, b);
+    EXPECT_EQ(i, 6);
+    int j = kmpSubstring(s, "f");
+    EXPECT_EQ(j, -1);
+}
+TEST(Strings, KMP_SUBSTRING1)
 {
     string A = "Hello World";
     string B = "World";
     int index = kmpSubstring(A, B);
     EXPECT_EQ(index, 6);
 }
-TEST(String, KMP_SUBSTRING2)
+TEST(Strings, KMP_SUBSTRING2)
 {
     string A = "Hello World";
     string C = "Zorld";
@@ -43,6 +55,14 @@ TEST(DISABLED_Bucket_Sort, Float)
     float arrSorted[] = { 1.1, 1.25, 2.4, 2.748, 3.0, 3.02, 3.9, 4.59, 94.9 };
     float arr[] = { 4.59, 1.25, 2.748, 2.4, 1.1,3.02, 3.9,  3.0, 94.9 };
     bucketSort(arr, 4); 
+}
+
+TEST(Sort, stacksort)
+{
+    vector<int> values = { 1,4,5,2,3,7,6 };
+    vector<int> sol = stacksort(values);
+    vector<int> ans = { 7,6,5,4,3,2,1 };
+    EXPECT_EQ(ans, sol);
 }
 
 TEST(Linked_List, CreateLinkedList)
@@ -84,15 +104,6 @@ TEST(Geometry, DotProduct2)
     EXPECT_EQ(dotp, 0);
 }
 
-TEST(Strings, KMP)
-{
-    string s = "Hello World";
-    string b = "World";
-    int i = kmpSubstring(s, b);
-    EXPECT_EQ(i, 6);
-    int j = kmpSubstring(s, "f");
-    EXPECT_EQ(j, -1); 
-}
 
 TEST(SegmentTree, MinRangeValidInput)
 {
@@ -183,7 +194,13 @@ TEST(Permutations, Variant3)
         }
     }
 }
+TEST(ShortestPaths, BiBFS)
+{
+    vector<vector<int>> adjList = { {1,2}, {0,2,3},{0,1,3},{4},{3} }; 
+    int dist = bidirectional_BFS(0, adjList, 4); 
+    EXPECT_EQ(dist, 3);
 
+}
 TEST(ShortestPaths, Dijkstra)
 {
     vector<vector<vector<int>>> adjList= { {{1, 4}, {2, 1}},

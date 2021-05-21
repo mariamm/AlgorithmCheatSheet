@@ -13,22 +13,22 @@
 
 
 
-//Euclidean distance between two points in 2d (l2 norm)
+//Euclidean distance between two points in 2d (l2 norm, continues diagonal allowed)
 // sqrt( (x2-x1)^2 + (y2-y1)^2)
-int euclideanDistance(pair<int, int> p1, pair<int, int> p2)
+double euclideanDistance(pair<int, int> p1, pair<int, int> p2)
 {
     double deltax_squared = pow(p2.first - p1.first, 2);
     double deltay_squared = pow(p2.second - p1.second, 2);
-    return (int)(sqrt(deltax_squared + deltay_squared));
+    return sqrt(deltax_squared + deltay_squared);
 }
-//Manhatten distance between two points (l1 norm)
+//Manhatten distance between two points (l1 norm, stairs like)
 // |x2-x1| + |y2-y1|
 int manhattenDistance(pair<int, int> p1, pair<int, int> p2)
 {
     return abs(p1.first - p2.first) + abs(p1.second - p2.second);
 }
 
-//Chebychev distance between two points (kings move)
+//Chebychev distance between two points (kings move, discrete diagonal allowed)
 // max(|x2-x1|, |y2-y1|)
 int chebychevDistance(pair<int, int> p1, pair<int, int> p2)
 {

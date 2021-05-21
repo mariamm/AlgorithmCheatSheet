@@ -2,289 +2,10 @@
 
 #include "Common.h"
 
-///////////////////////////////////////////////
-/////// Custom Data Structures ////////////////
-///////////////////////////////////////////////
-struct ListNode
-{
-    int val;
-    ListNode* next;
-    ListNode* previous; //for double linked list;
-    ListNode()
-    {
-        val = 0;
-        next = NULL;
-        previous = NULL;
-    }
-    ListNode(int v)
-    {
-        val = v;
-        next = NULL;
-        previous = NULL;
-    }
-};
 
-struct TreeNode
-{
-    int val;
-    TreeNode* left;
-    TreeNode* right;
-
-    TreeNode()
-    {
-        val = 0;
-        left = NULL;
-        right = NULL;
-    }
-    TreeNode(int v)
-    {
-        val = v;
-        left = NULL;
-        right = NULL;
-    }
-};
-
-struct LinkedList
-{
-    ListNode* head;  //front
-    ListNode* tail;     //back
-
-    ~LinkedList() { /* delete nodes from head to end, NULL ptr*/ }
-    LinkedList() { head = NULL; tail = NULL; }
-    void clear() {/*clear nodes from head to end, NULL ptr*/ }
-
-    void popBack()
-    {
-        if (tail != NULL) {
-            if (head == tail)
-                head = NULL;
-
-            ListNode* temp = tail;
-            tail = tail->previous;
-
-            if (tail != NULL)
-                tail->next = NULL;
-
-            delete temp;
-            temp = NULL;
-        }
-    }
-    void pushFront(ListNode* newHead)
-    {
-        if (head != NULL) {
-            newHead->next = head;
-            head->previous = newHead;
-            head = newHead;
-        }
-        else {
-            head = newHead;
-            tail = newHead;
-        }
-    }
-    //emplace_front
-    void moveToHead(ListNode* n)
-    {
-        if (n != head) {
-            n->previous->next = n->next;
-            if (n != tail)
-                n->next->previous = n->previous;
-            else
-                tail = n->previous;
-
-            pushFront(n);
-        }
-    }
-};
-
-class Trie {
-    unordered_map<char, Trie*> children;
-    bool isCompleteWord;
-    int frequency;
-    Trie()
-    {
-        frequency = 0;
-        isCompleteWord = false;
-    }
-    void addWord(string word)
-    {
-        if (word.empty()) return;
-        Trie* current = this;
-        for (char c : word)
-        {
-            current->frequency++;
-            if (current->children.find(c) == current->children.end())
-                current->children[c] = new Trie();
-
-            current = current->children[c];
-        }
-        current->isCompleteWord = true;
-    }
-    bool isPrefix(string pref)
-    {
-        Trie* current = this;
-        for (char c : pref)
-        {
-            if (current->children.find(c) == current->children.end())
-                return false;
-            current = current->children[c];
-        }
-        return true;
-    }
-    bool hasWord(string word)
-    {
-        Trie* current = this;
-        for (char c : word)
-        {
-            if (current->children.find(c) == current->children.end())
-                return false;
-            current = current->children[c];
-        }
-        return current->isCompleteWord;
-    }
-
-    //From leetcode #745
-    //prefix sufix combination
-    void addWords(const vector<string> &words)
-    {
-        for (int i = 0; i < words.size(); i++)
-        {
-            for (int j = words[i].size(); j >= 0; j--)
-            {
-                //#test", "t#test", "st#test", "est#test", "test#test"
-                string subst = words[i].substr(j);
-                string temp = subst + "#" + words[i]; 
-                this->addWord(temp);
-            }
-        }
-    }
-    //filter by prefix and suffix
-    bool findPrefixSuffix(string prefix, string suffix)
-    {
-        return this->isPrefix(suffix + "#" + prefix);
-    }
-};
-
-//DSU: Disjoint - Set - Union
-//Complexity O(log n) in worst case because of path compression
-struct DSU
-{
-    unordered_map<int, int> parents;
-    unordered_map<int, int> size; //union by size path compression
-    unordered_map<int, int> rank; //union by rank path compression 
-
-    // 1-based-index
-    void make_set(int vertices)
-    {
-        for (int v = 1; v<=vertices; v++)
-        {
-            parents[v] = v;
-            size[v] = 1;
-            rank[v] = 0;
-        }
-    }
-    void make_set(const vector<int>& vertices)
-    {
-        for (int v : vertices)
-        {
-            parents[v] = v;
-            size[v] = 1;
-            rank[v] = 0;
-        }
-    }
-    int find_set(int n)
-    {
-        if (parents[n] == n)
-            return n;
-        parents[n] = find_set(parents[n]); //path compression
-        return parents[n];
-    }
-    void union_by_size(int a, int b)
-    {
-        a = find_set(a);
-        b = find_set(b);
-
-        if (a != b) {
-            //union by size
-            if (size[b] > size[a])
-                swap(a, b);
-
-            parents[b] = a;
-            size[a] += size[b];
-        }
-    }
-    void union_by_rank(int a, int b)
-    {
-        a = find_set(a);
-        b = find_set(b);
-
-        if (a != b) {
-            //union by rank
-            if (rank[b] > rank[a])
-                swap(a, b);
-
-            parents[b] = a;
-            if (rank[a] == rank[b])
-                rank[a]++;
-        }
-    }
-};
-
-///////////////////////////////////////////////
-/////// Data types Constructions //////////////
-///////////////////////////////////////////////
-
-ListNode* createLinkedList(const vector<int>& v)
-{
-    if (v.size() == 0) return NULL;
-
-    ListNode* head = new ListNode(v[0]);
-    ListNode* ptr = head;
-
-    for (int i = 1; i < v.size(); i++)
-    {
-        ptr->next = new ListNode(v[i]);
-        ptr = ptr->next;
-    }
-    return head;
-}
-
-vector<int> linkedListToVector(ListNode* head)
-{
-    vector<int> v;
-    while (head)
-    {
-        v.push_back(head->val);
-        head = head->next;
-    }
-    return v;
-}
-TreeNode* createTree(const vector<int>& v)
-{
-    if (v.size() == 0) return NULL;
-
-    TreeNode* root = new TreeNode(v[0]);
-
-    queue<TreeNode*> q;
-    q.push(root);
-
-    for (int i = 1; i < v.size(); i += 2)
-    {
-        TreeNode* p = q.front();
-        q.pop();
-        if (v[i] != -1)
-        {
-            p->left = new TreeNode(v[i]);
-            q.push(p->left);
-        }
-        if (v[i + 1] != -1)
-        {
-            p->right = new TreeNode(v[i]);
-            q.push(p->right);
-        }
-    }
-
-    return root;
-}
+////////////////////////////////////////////
+////////////   Strings        //////////////
+////////////////////////////////////////////
 
 //Char conversions
 char intToChar(int i)
@@ -316,11 +37,6 @@ bool isVowel(char c)
     string vowels = "AEIOUaeiou";
     return vowels.find(c) != string::npos;
 }
-////////////////////////////////////////////
-////////////   Strings        //////////////
-////////////////////////////////////////////
-
-
 /* KMP Algorithm(find substring index)
  * Knuth Morris Pratt
  * If string B is substring of A, return starting index of substring
@@ -380,6 +96,36 @@ void bucketSort(float arr[], int n)
             arr[index++] = b[i][j];
 }
 
+vector<int> stacksort(vector<int>& values)
+{
+    vector<int> ans;
+   /*
+   
+    v = 15
+    a = 72
+    t = 3
+   */
+    while (!values.empty())
+    {
+        if (ans.empty() || values.back() < ans.back())
+        {
+            ans.push_back(values.back());
+            values.pop_back();
+        }
+        else
+        {
+            int t = values.back();
+            values.pop_back();
+            do
+            {
+                values.push_back(ans.back());
+                ans.pop_back();
+            } while (!ans.empty() && ans.back() < t);
+            ans.push_back(t);
+        }
+    }
+    return ans;
+}
 //Linked List
 //Reverse list recursive
 ListNode* reverseListRecursive(ListNode* A, ListNode*& head)
@@ -557,93 +303,9 @@ pair<int, int> treeDepthAndDiameter(TreeNode* root) {
     return { maxdepth , maxdiameter };
 }
 
-/* Segment tree
- * Time complexity: construct treeO(nlogn)
- * Time complexity search: O(logn)
- * Space complexity: O(nlogn)
-*  Minimum Range 
-*/
-struct SegmentTree 
-{
-    enum class Type {
-        Minimum,
-        Sum
-    };
-    SegmentTree(vector<int>& input, Type type)
-    {
-        m_range = input.size() - 1;
-        int n = getSize(input.size());
-        if (type == Type::Minimum)
-            m_tree.resize(n, INT_MAX);
-        else
-            m_tree.resize(n);
-
-        m_type = type;
-        constructTree(input, 0, 0, m_range);
-    }
-    void constructTree(vector<int>& input, int pos, int low, int high)
-    {
-        if (low == high)
-            m_tree[pos] = input[low];
-        else
-        {
-            int mid = low + (high - low) / 2;
-            constructTree(input, 2 * pos + 1, low, mid);
-            constructTree(input, 2 * pos + 2, mid+1, high);
-            m_tree[pos] = operation(m_tree[2 * pos + 1], m_tree[2 * pos + 2]); 
-        }
-
-    }
-    int rangeQuery(int i, int j)
-    {
-        return rangeQueryHelper(0, m_range, i, j, 0);
-    }
-
-    int operation(int i, int j)
-    {
-        if (m_type == Type::Minimum)
-            return min(i, j);
-        else if (m_type == Type::Sum)
-            return i + j;
-        else
-            return -1;
-    }
-    private: 
-        vector<int> m_tree;
-        int m_range;
-        Type m_type;
-        int rangeQueryHelper(int low, int high, int qlow, int qhigh, int pos)
-        { 
-            //full overlap
-            if(low >= qlow && high <= qhigh)
-                return m_tree[pos];
-            //no overlap
-            else if(low > qhigh || high < qlow)
-                return m_type == Type::Minimum ? INT_MAX : 0;
-            //partial overlap
-            int mid = low + (high - low) / 2;
-            return operation(rangeQueryHelper(low, mid, qlow, qhigh, 2*pos+1), rangeQueryHelper( mid+1, high, qlow, qhigh, 2*pos + 2));  
-        } 
-
-        int getSize(int inputSize)
-        {
-            int n = 0;
-            for (int i = 0, base = 1; i < 32; i++, base *= 2)
-            {
-                if (base >= inputSize)
-                {
-                    n = 2 * base - 1;
-                    break;
-                }
-            }
-            return n; 
-        }
-};
-
 ////////////////////////////////////////////
 ////////////   Graphs         //////////////
 ////////////////////////////////////////////
-
 
 /* DFS Depth first search graph traversal
 *Space Complexity : AdjList O(V + E) AdjMat O(V ^ 2) -
@@ -694,15 +356,16 @@ void dfs(vector<vector<int>>& adj, vector<int>VerticesSet) {
     }
 }
 
-
 /*BFS Breadth first search graph traversal
 * Space Complexity : AdjList O(V + E) AdjMat O(V ^ 2)
 * Time Complexity Time : O(V)
 * BFS is used for Shortest Path.
+* Implementation too verbose, from MIT course
 * @param s is starting node.
 * @param t is destination node(optional)
+* @return distance between s and t
 */
-void BFS(int s, map<int, vector<int>> adj, int t)
+int BFS(int s, map<int, vector<int>> adj, int t)
 {
     queue<int> frontier; //Queue to add children of the visited node
     frontier.push(s);
@@ -726,8 +389,8 @@ void BFS(int s, map<int, vector<int>> adj, int t)
             //If adjacent nodes are not visited (not in parent)
             if (parent.count(v))
             {
-                //if (v == t)
-                /*destination reached*/
+                if (v == t)
+                    return i+1;
 
                 parent.insert({ v, u }); //assign u as parent
                 level.insert({ v, i + 1 }); //set their level
@@ -735,7 +398,69 @@ void BFS(int s, map<int, vector<int>> adj, int t)
             }
         }
     }
+    return -1; //destination not found
 }
+/*Bidirectional Breadth first search graph traversal 
+* Start the search on both the start and destination
+* Stop when they merge
+* if s has k adjacent vertices, then the distance to t is k^d
+* if we start the search in both direction, the search will only 
+* take 2 * k^(d/2), which is a factor of k^d better
+* @param s is starting node.
+* @param t is destination node(optional)
+*/
+int bidirectional_BFS(int s, vector<vector<int>> adj, int t)
+{
+    unordered_map<int, int> visited1;
+    unordered_map<int, int> visited2;
+
+    queue<int> q1;
+    queue<int> q2;
+    q1.push(s);
+    q2.push(t);
+    visited1[s] = 0;
+    visited2[t] = 0;
+    while (!q1.empty() && !q2.empty())
+    {
+        //visit next nodes in 1
+        s = q1.front(); q1.pop();
+        for (int n : adj[s])
+        {
+            if (visited1.find(n) != visited1.end()) //already visited
+            {
+                continue;
+            }
+            if (visited2.find(n) != visited2.end()) //bidirectionally visited, return ans
+            {
+                return visited2[n] + visited1[s] + 1;
+            }
+            else
+            {
+                visited1[n] = visited1[s] + 1; // set distance
+                q1.push(n);
+            }
+        }
+        t = q2.front(); q2.pop();
+        for (int n : adj[t])
+        {
+            if (visited2.find(n) != visited2.end()) //already visited
+            {
+                continue;
+            }
+            if (visited1.find(n) != visited1.end()) //bidirectionally visited, return ans
+            {
+                return visited2[t] + visited1[n] + 1;
+            }
+            else
+            {
+                visited2[n] = visited2[t] + 1; // set distance
+                q2.push(n);
+            }
+        }
+    }
+    return -1; //destination not found
+}
+
 /* Bellman-Ford
 * @param edgesList: List of all edges in the graph [u,v,w] edge between u,v with weight w
 * @param N: number of vertices
@@ -1019,167 +744,6 @@ int krushkalsMinimumSpanningTree(vector<vector<int> >& edges, int N)
         }
     }
     return weights;
-}
-
-////////////////////////////////////////////
-////////////   Backtracking   //////////////
-////////////////////////////////////////////
-
-/* Graph Coloring: 1. Check if graph is Bipartite (split in two groups connected to the other only)
- * Solution: Check if graph can be colored with 2 colors
- * @param graph: graph presented in adjacency list
- * @param v: current vertix
- * @param color: color of current vertix
- * @param visited: visited vertices set
- * @return: bool if graph can be colored
- */
-
-bool colorGraph(vector<vector<int>>& graph, int v, int color, unordered_map<int, int>& visited)
-{
-    for (int n : graph[v])
-    {
-        if (visited.find(n) == visited.end())
-        {
-            visited.insert({ n, -color });
-            if (!colorGraph(graph, n, -color, visited))
-                return false;
-        }
-        else
-        {
-            if (visited[n] == color)
-                return false;
-        }
-    }
-    return true;
-}
-
-bool isBipartite(vector<vector<int>>& graph) {
-    unordered_map<int, int> visited;
-
-    for (int i = 0; i < graph.size(); i++)
-    {
-        if (visited.find(i) == visited.end())
-        {
-            visited.insert({ i, 1 });
-            if (!colorGraph(graph, i, 1, visited))
-                return false;
-        }
-    }
-    return true;
-}
-/* Graph Coloring: 2.Check if graph can be colored with 3 colors. 
- * @param graph: graph presented in adjacency list
- * @param v: current vertix
- * @param colors: input vector of colors
- * @param color: color of current vertix
- * @param visited_color: visited vertices map and their color
- * @return: bool if graph can be colored
- */
-
-bool colorGraph2(vector<vector<int>>& graph, int v, vector<int> colors, int c, unordered_map<int, int> visited_color)
-{
-    for (int n : graph[v])
-    {
-        if (visited_color.find(n) == visited_color.end()) //neighbor not visited yet
-        {
-            for (int i = 0; i < colors.size(); i++)
-            {
-                if (i == c)
-                    continue; //skip same color
-                visited_color[n] = i;
-                if (colorGraph2(graph, n, colors, i, visited_color) == false)
-                {
-                    //remove set color (to try next color)
-                    visited_color.erase(n);
-                }
-                else
-                {
-                    break;
-                }
-            }
-        }
-        else if (visited_color[n] == c)
-            return false;
-
-    }
-    return true;
-}
-bool colorGraph2Main(vector<vector<int>>& graph, vector<int> colors)
-{
-    //Assuming a connected graph
-    unordered_map<int, int> visited_color;
-    for (int i = 0; i < graph.size(); i++)
-    {
-        //color not visited nodes
-        if (visited_color.find(i) == visited_color.end())
-        {
-            for (int c = 0; c < colors.size(); c++)
-            {
-                visited_color[i] = c;
-                if (colorGraph2(graph, i, colors, c, visited_color))
-                {
-                    break; //found correct color
-                }
-                else
-                {
-                    visited_color.erase(i);
-                }
-            }
-        }
-
-    }
-    return visited_color.size() == graph.size();
-}
-/*3 Variant Examples for permutation function :
- * Given a collection of numbers, return all possible permutations. Aka Heap's algorithm.
- * @param num : initial vector
- * @param start : start index for the recursive call
- * @param result : output list of vector permutations
-*/
-//Variant 1
-void permute(vector<int>& num, int start, vector<vector<int> >& result) {
-    if (start == num.size() - 1) {
-        result.push_back(num);
-        return;
-    }
-    for (size_t i = start; i < num.size(); i++) {
-        swap(num[start], num[i]);
-        permute(num, start + 1, result);
-        swap(num[start], num[i]);
-    }
-}
-/*Variant 2
- *@param num : initial vector
-* @param curr : current vector for recursive call
-* @param result : output list of vector permutations
-* Not really a good solution considering that we have to modify nums with INT_MAX to not be reused, which limits the 
-* possibility of having INT_MAX as an actual value in the input
-*/
-void permute(vector<int>& nums, vector<int>& curr, vector<vector<int>>& result) {
-    if (curr.size() == nums.size()) {
-        result.push_back(curr);
-        return;
-    }
-    for (size_t i = 0; i < nums.size(); i++)
-    {
-        if(nums[i] != INT_MAX)
-        {
-            curr.push_back(nums[i]);
-            int temp = nums[i];
-            nums[i] = INT_MAX;
-            permute(nums, curr, result);
-            nums[i] = temp;
-            curr.pop_back();
-        }
-    }
-}
-//Variant 3 (using std::next_permutation)
-void permute(vector<int>& nums, vector<vector<int>>& result)
-{
-    sort(nums.begin(), nums.end()); //must be sorted in the beginning, otherwise permutations are missing
-    do {
-        result.push_back(nums);
-    } while (next_permutation(nums.begin(), nums.end()));
 }
 
 ////////////////////////////////////////////
