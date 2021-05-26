@@ -308,8 +308,9 @@ pair<int, int> treeDepthAndDiameter(TreeNode* root) {
 ////////////////////////////////////////////
 
 /* DFS Depth first search graph traversal
-*Space Complexity : AdjList O(V + E) AdjMat O(V ^ 2) -
-* Time Complexity: O(V)
+* AdjList O(V + E) AdjMat O(V ^ 2)
+* Time Complexity Time : O(V+E)
+* Space Complexity : O(V)
 */
 //Recursive call. Can be made to return a bool value if we are checking cycles. 
 //Iterative implementation would use a stack!
@@ -357,12 +358,13 @@ void dfs(vector<vector<int>>& adj, vector<int>VerticesSet) {
 }
 
 /*BFS Breadth first search graph traversal
-* Space Complexity : AdjList O(V + E) AdjMat O(V ^ 2)
-* Time Complexity Time : O(V)
+* AdjList O(V + E) AdjMat O(V ^ 2)
+* Time Complexity Time : O(V+E)
+* Space Complexity : O(V)
 * BFS is used for Shortest Path.
 * Implementation too verbose, from MIT course
 * @param s is starting node.
-* @param t is destination node(optional)
+* @param t is destination node
 * @return distance between s and t
 */
 int BFS(int s, map<int, vector<int>> adj, int t)
@@ -407,7 +409,7 @@ int BFS(int s, map<int, vector<int>> adj, int t)
 * if we start the search in both direction, the search will only 
 * take 2 * k^(d/2), which is a factor of k^d better
 * @param s is starting node.
-* @param t is destination node(optional)
+* @param t is destination node
 */
 int bidirectional_BFS(int s, vector<vector<int>> adj, int t)
 {
@@ -475,7 +477,7 @@ int bellmanFordShortestPath(vector<vector<int>> edgesList, int N)
     // for every edge find negative cycle
     const int INF = 1e9;
     vector<int> d(N, INF);
-    d[0] = 0; //d[Start]
+    d[0] = 0; //d[Start]=0
     vector<int> p(N, -1);
     for(int i=0; i<N; i++) {
         for (vector<int> e : edgesList) {

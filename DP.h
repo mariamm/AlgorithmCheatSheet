@@ -221,19 +221,19 @@ namespace DP
         //j--> used capacity
         //dp[i][j] maximum value considering i items so far and using j capacity
 
-        for (size_t i = 0; i < values.size(); i++)
+        for (size_t i = 1; i <= values.size(); i++)
         {
             int w = weights[i];
             int v = values[i];
 
             for (size_t j = 1; j <= capacity; j++)
-            {
-                dp[i + 1][j] = dp[i][j];
-
-                if (j + w <= capacity)
+            { 
+                if (j-w >=0)
                 {
-                    dp[i + 1][j + w] = max(dp[i + 1][j] + v, dp[i + 1][j + w]);
+                    dp[i][j] = max(dp[i-1][j], dp[i-1][j-w]);
                 }
+                else
+                    dp[i][j] = dp[i - 1][j];
             }
         }
         return dp[values.size()][capacity];
@@ -407,14 +407,14 @@ namespace DP
 struct TreeAncestor {
 
     vector<vector<int>> up;
-    TreeAncestor(int n, vector<int> parent){
+    TreeAncestor(int n, vector<int> parent) {
         up = vector<vector<int>>(n, vector<int>(31)); //31 can be optimized to actual tree height
         for (size_t i = 0; i < n; i++)
         {
             up[i][0] = parent[i];
             for (size_t b = 1; b < 31; b++)
             {
-                up[i][b] = up[ up[i][b - 1] ][b - 1]; //the bth ancestor of the b-1th ancestor (log jumps)
+                up[i][b] = up[up[i][b - 1]][b - 1]; //the bth ancestor of the b-1th ancestor (log jumps)
             }
         }
     }
@@ -435,121 +435,120 @@ struct TreeAncestor {
         }
         return node;
     }
-
-
-    /*Cracking the coding interview questions (Chapter 8)*/
-
-    //8.1 Triple jump
-    int waysToReach(int n)
-    {
-        //push dp or pull dp?
-        vector<int> dp(n + 1);
-        dp[0] = 1;
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 1; j <= 3; j++)
-            {
-                if (i + j < dp.size())
-                    dp[i + j] += dp[i];
-            }
-        }
-        return dp[n];
-    }
-    //8.2 Robot grid
-    string robotPath(vector<vector<bool>>& grid)
-    {
-        //assuming start and end are valid points
-        int rows = grid.size();
-        int cols = grid[0].size();
-        vector<vector<bool>> dp(rows + 1, vector<bool>(cols + 1));
-        dp[rows][cols - 1] = true;
-        dp[rows - 1][cols] = true;
-        //robot starts at 0,0 and wants to arrive at r,c
-
-        for (int i = rows - 1; i >= 0; i--)
-        {
-            for (int j = cols - 1; j >= 0; j--)
-            {
-                if (grid[i][j] == true)
-                {
-                    dp[i][j] = dp[i + 1][j] || dp[i][j + 1];
-                }
-                else
-                    dp[i][j] = false;
-            }
-        }
-        int i = 0, j = 0;
-        string path = "";
-        while (i < rows && j < cols)
-        {
-            if (dp[i + 1][j])
-            {
-                path += "D";
-                i++;
-            }
-            else
-            {
-                path += "R";
-                j++;
-            }
-        }
-        return path;
-    }
-    //8.3 Magic index (don't understand why dp, binary search?)
-    int magicIndex(vector<int>& A)
-    {
-        int low = 0;
-        int high = A.size() - 1;
-
-        while (low <= high)
-        {
-            int mid = low + (high - low) / 2;
-
-            if (A[mid] == mid)
-                return mid;
-            //01234
-            //12344
-            if (A[mid] > mid)
-            {
-                low = mid + 1;
-            }
-            else
-                high = mid - 1;
-        }
-        return -1;
-    }
-
-    //8.4 power set (return subsets of set)
-    void helper(vector<vector<int>>& ans, vector<int>& current, vector<int>& nums, int idx)
-    {
-        ans.push_back(current);
-
-        for (int i = idx; i < nums.size(); i++)
-        {
-            current.push_back(nums[i]);
-            helper(ans, current, nums, i + 1);
-            current.pop_back();
-        }
-    }
-    vector<vector<int>> powerset(vector<int>& nums)
-    {
-        vector<vector<int>> ans;
-        vector<int> current = {};
-        helper(ans, current, nums, 0);
-        return ans;
-    }
-
-    //8.5 Recursive multiply
-    int recursiveMultiply(int x, int y)
-    {
-        if (x > y)
-            swap(x, y);
-        if (x == 1)
-            return y;
-        return recursiveMultiply(x - 1, y) + y;
-    }
-
-    //8.6 Towers of hanoi
-
 };
+
+/*Cracking the coding interview questions (Chapter 8)*/
+
+//8.1 Triple jump
+int waysToReach(int n)
+{
+    //push dp or pull dp?
+    vector<int> dp(n + 1);
+    dp[0] = 1;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 1; j <= 3; j++)
+        {
+            if (i + j < dp.size())
+                dp[i + j] += dp[i];
+        }
+    }
+    return dp[n];
+}
+//8.2 Robot grid
+string robotPath(vector<vector<bool>>& grid)
+{
+    //assuming start and end are valid points
+    int rows = grid.size();
+    int cols = grid[0].size();
+    vector<vector<bool>> dp(rows + 1, vector<bool>(cols + 1));
+    dp[rows][cols - 1] = true;
+    dp[rows - 1][cols] = true;
+    //robot starts at 0,0 and wants to arrive at r,c
+
+    for (int i = rows - 1; i >= 0; i--)
+    {
+        for (int j = cols - 1; j >= 0; j--)
+        {
+            if (grid[i][j] == true)
+            {
+                dp[i][j] = dp[i + 1][j] || dp[i][j + 1];
+            }
+            else
+                dp[i][j] = false;
+        }
+    }
+    int i = 0, j = 0;
+    string path = "";
+    while (i < rows && j < cols)
+    {
+        if (dp[i + 1][j])
+        {
+            path += "D";
+            i++;
+        }
+        else
+        {
+            path += "R";
+            j++;
+        }
+    }
+    return path;
+}
+//8.3 Magic index (don't understand why dp, binary search?)
+int magicIndex(vector<int>& A)
+{
+    int low = 0;
+    int high = A.size() - 1;
+
+    while (low <= high)
+    {
+        int mid = low + (high - low) / 2;
+
+        if (A[mid] == mid)
+            return mid;
+        //01234
+        //12344
+        if (A[mid] > mid)
+        {
+            low = mid + 1;
+        }
+        else
+            high = mid - 1;
+    }
+    return -1;
+}
+
+//8.4 power set (return subsets of set)
+void helper(vector<vector<int>>& ans, vector<int>& current, vector<int>& nums, int idx)
+{
+    ans.push_back(current);
+
+    for (int i = idx; i < nums.size(); i++)
+    {
+        current.push_back(nums[i]);
+        helper(ans, current, nums, i + 1);
+        current.pop_back();
+    }
+}
+vector<vector<int>> powerset(vector<int>& nums)
+{
+    vector<vector<int>> ans;
+    vector<int> current = {};
+    helper(ans, current, nums, 0);
+    return ans;
+}
+
+//8.5 Recursive multiply
+int recursiveMultiply(int x, int y)
+{
+    if (x > y)
+        swap(x, y);
+    if (x == 1)
+        return y;
+    return recursiveMultiply(x - 1, y) + y;
+}
+
+//8.6 Towers of hanoi
+
 
