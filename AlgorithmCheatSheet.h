@@ -472,9 +472,11 @@ int bidirectional_BFS(int s, vector<vector<int>> adj, int t)
 int bellmanFordShortestPath(vector<vector<int>> edgesList, int N)
 {
     //Steps: 
-    // Initialize with inf value and p -1
-    // For every edge, relax distance
-    // for every edge find negative cycle
+    // Create distance array d & initialize with inf value 
+    // Create predecessor array p & initialize with -1
+    // Set start distance to 0
+    // For every edge, relax distance and set predecessor
+    // Then, for every edge find negative cycle to discard result
     const int INF = 1e9;
     vector<int> d(N, INF);
     d[0] = 0; //d[Start]=0

@@ -212,8 +212,7 @@ namespace DP
 
     /* Classic 0/1 knapsack problem
      * Maximize values in knapsack with weights less or equal to capacity. Items are used only once!
-     */
-    //likely wrong implementation
+     */ 
     int knapsack(vector<int> values, vector<int> weights, int capacity)
     {
         vector<vector<int>> dp(values.size() + 1, vector<int>(capacity + 1));     
@@ -223,14 +222,14 @@ namespace DP
 
         for (size_t i = 1; i <= values.size(); i++)
         {
-            int w = weights[i];
-            int v = values[i];
+            int w = weights[i-1];
+            int v = values[i-1];
 
             for (size_t j = 1; j <= capacity; j++)
             { 
-                if (j-w >=0)
+                if ( j>=w)
                 {
-                    dp[i][j] = max(dp[i-1][j], dp[i-1][j-w]);
+                    dp[i][j] = max(dp[i-1][j], dp[i-1][j-w]+v);
                 }
                 else
                     dp[i][j] = dp[i - 1][j];

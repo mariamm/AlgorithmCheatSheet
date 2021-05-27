@@ -296,3 +296,25 @@ TEST(Math, Factorial)
         EXPECT_EQ(n, ans[i]);
     } 
 }
+
+TEST(DynamicProgramming, Knapsack1)
+{
+    vector<int> weights = { 3,1,3,4,2 };
+    vector<int> values = { 2,2,4,5,3 };
+    int capacity = 7;
+    int maxvalue = DP::knapsack(values, weights, capacity);
+    int expectedMaxvalue = 10;
+
+    EXPECT_EQ(maxvalue, expectedMaxvalue);
+}
+
+TEST(DynamicProgramming, Knapsack2)
+{
+    vector<int> weights = { 3,1,3,4,2 };
+    vector<int> values = { 2,2,4,5,3 };
+    int capacity = 7;
+    int maxvalue = DP::knapsack1DnoRep(values, weights, capacity);
+    int expectedMaxvalue = 10;
+
+    EXPECT_EQ(maxvalue, expectedMaxvalue);
+}
