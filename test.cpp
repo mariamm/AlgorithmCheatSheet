@@ -210,7 +210,7 @@ TEST(ShortestPaths, Dijkstra)
                                             {} };
 
 
-    int dist = dijkstraShortestPath(adjList, 4);
+    int dist = dijkstraShortestPath(adjList, 5);
 
     EXPECT_EQ(dist, 7);
     
@@ -231,10 +231,8 @@ TEST(ShortestPaths, BellmanFord)
     edges.push_back({ 4,2,-3 });
     int dist = bellmanFordShortestPath(edges, 5);
 
-    EXPECT_EQ(dist, 7);
-
-}
-
+    EXPECT_EQ(dist, 7); 
+}  
 TEST(Graphs, HierHolzerEuelerianPath)
 {
     vector<vector<int>> adjList = {

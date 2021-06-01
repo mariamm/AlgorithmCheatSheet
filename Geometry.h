@@ -226,3 +226,15 @@ bool onDiagonal(pair<int, int> c1, pair<int, int> c2)
 
     return false;
 }
+
+
+/*
+* Area of triangle
+* The area is zero if all three points are collinear
+* Formula: 0.5 * ( Ax(By − Cy) + Bx(Cy − Ay) + Cx (Ay − By) )
+*/
+
+double triangleArea(pair<int, int> p1, pair<int, int> p2, pair<int, int> p3)
+{
+    return 0.5 * (p1.first * (p2.second - p3.second) + p2.first * (p3.second - p1.second) + p3.first * (p1.second - p2.second));
+}

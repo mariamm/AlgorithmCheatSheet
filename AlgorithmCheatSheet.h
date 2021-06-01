@@ -411,7 +411,7 @@ int BFS(int s, map<int, vector<int>> adj, int t)
 * @param s is starting node.
 * @param t is destination node
 */
-int bidirectional_BFS(int s, vector<vector<int>> adj, int t)
+int bidirectional_BFS(int s, const vector<vector<int>> &adj, int t)
 {
     unordered_map<int, int> visited1;
     unordered_map<int, int> visited2;
@@ -467,9 +467,9 @@ int bidirectional_BFS(int s, vector<vector<int>> adj, int t)
 * @param edgesList: List of all edges in the graph [u,v,w] edge between u,v with weight w
 * @param N: number of vertices
 * @return: shortest distance from 0 to N-1
-* Runtime: O(V*E)
+* Runtime complexity: O(V*E)
 */
-int bellmanFordShortestPath(vector<vector<int>> edgesList, int N)
+int bellmanFordShortestPath(const vector<vector<int>> &edgesList, int N)
 {
     //Steps: 
     // Create distance array d & initialize with inf value 
@@ -497,17 +497,62 @@ int bellmanFordShortestPath(vector<vector<int>> edgesList, int N)
     }
     return d[N - 1];
 }
+
+int bellmanFordShortestPathAdjList(const vector<vector<vector<int>>> &adjList, int N)
+{
+    const int INF = 1e9+7;
+    vector<int> dist(N, INF);
+    vector<int> pred(N, -1);
+    dist[0] = 0;
+
+    for (int i = 0; i < N; i++)
+    {
+        for (vector<int> n : adjList[i])
+        {
+            int v = n[0];
+            int w = n[1];
+            if (dist[v] > (dist[i] + w))
+            {
+                dist[v] = dist[i] + w;
+                pred[v] = i;
+            }
+        }
+    }
+
+    for (int i = 0; i < N; i++)
+    {
+        for (vector<int> n : adjList[i])
+        {
+            int v = n[0];
+            int w = n[1];
+            if (dist[v] > (dist[i] + w))
+            {
+                dist[v] = -INF; //negative cycle
+            }
+        }
+    }
+
+    return dist[N - 1];
+}
 /* Dijkstra 
  * Lazy implementation using a regular priority queue (eager implementation uses indexed priority queue)
  * @param adjList : weighted adjacency list of the graph (only positive weights)
  * @param N: vertices, 0 indexed
  * @return: shortest distance from node 0 to N-1
+ * Runtime complexity: O((V+E)logV)
  */
 
-int dijkstraShortestPath(vector<vector<vector<int>>> adjList, int N)
+int dijkstraShortestPath(const vector<vector<vector<int>>> &adjList, int N)
 {
-    assert(adjList.size() == N+1 && "Adjacency List must equal vertices N");
-    vector<int> dist(N+1, INT_MAX);
+    // Steps:
+    // Create distance array d & initialize with inf value 
+    // Set start distance to 0
+    // Add start to priority queue (minheap of vertices distances)
+    // Visit every vertex in the pq, skip if visited already (has shorter distance in distance array)
+    // Update distance to neighbors and add them to pq
+    // Then, for every edge find negative cycle to discard result
+    assert(adjList.size() == N && "Adjacency List must equal vertices N");
+    vector<int> dist(N, INT_MAX);
     //using priority queue in lazy implementation
     priority_queue<pair<int, int>, vector<pair<int,int>>, greater<pair<int,int>>> pq; //pair: distance, vertex
     //initial state
@@ -529,8 +574,10 @@ int dijkstraShortestPath(vector<vector<vector<int>>> adjList, int N)
             pq.emplace(distToNeighbor, neighbor[0]);
         }
     } 
-    return dist[N]; 
+    return dist[N-1]; 
 }
+
+
 //Topological sort of a DAG (directed acyclic graph)
 vector<int> kahnsort(vector<vector<int>>& graph)
 {
