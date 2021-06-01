@@ -498,42 +498,6 @@ int bellmanFordShortestPath(const vector<vector<int>> &edgesList, int N)
     return d[N - 1];
 }
 
-int bellmanFordShortestPathAdjList(const vector<vector<vector<int>>> &adjList, int N)
-{
-    const int INF = 1e9+7;
-    vector<int> dist(N, INF);
-    vector<int> pred(N, -1);
-    dist[0] = 0;
-
-    for (int i = 0; i < N; i++)
-    {
-        for (vector<int> n : adjList[i])
-        {
-            int v = n[0];
-            int w = n[1];
-            if (dist[v] > (dist[i] + w))
-            {
-                dist[v] = dist[i] + w;
-                pred[v] = i;
-            }
-        }
-    }
-
-    for (int i = 0; i < N; i++)
-    {
-        for (vector<int> n : adjList[i])
-        {
-            int v = n[0];
-            int w = n[1];
-            if (dist[v] > (dist[i] + w))
-            {
-                dist[v] = -INF; //negative cycle
-            }
-        }
-    }
-
-    return dist[N - 1];
-}
 /* Dijkstra 
  * Lazy implementation using a regular priority queue (eager implementation uses indexed priority queue)
  * @param adjList : weighted adjacency list of the graph (only positive weights)
