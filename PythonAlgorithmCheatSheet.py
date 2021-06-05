@@ -2,7 +2,7 @@
 # Basics
 ######################
 # arithmetic operations
-import inline as inline
+#import inline as inline
 import matplotlib
 
 
@@ -127,3 +127,27 @@ def sinus_plot_test():
     plt.ylabel('y')
     plt.legend(['Sine', 'Cosine'])
     plt.show()
+
+##########################################
+# Linear algebra
+##########################################
+class Vector:
+    def __init__(self, coordinates):
+        try: 
+            if not coordinates:
+                raise ValueError('Coordinates are empty') 
+            self.coordinates = tuple(coordinates)
+            self.dimension = len(coordinates) 
+        except: 
+            raise TypeError('Coordinates must be a tuple')
+    
+    def __str__(self):
+        return 'Vector{}'.format(self.coordinates)
+    
+    def __eq__(self, v):
+        return self.coordinates == v.coordinates
+    
+    
+myvector = Vector({1,2,3})
+print(myvector)
+                

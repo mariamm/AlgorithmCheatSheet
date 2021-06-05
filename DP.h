@@ -1,4 +1,4 @@
-#include "Common.h"
+﻿#include "Common.h"
 
 /* Random collection of DP problems*/
 namespace DP
@@ -392,162 +392,307 @@ namespace DP
 
         return sum;
     }
-};
 
-/*
- * Binary Lifting
- * Kth Ancestor of a Tree Node
- * Tree represented as an array of parents, where parent[i] is the parent of node i. The root of the tree is node 0 and its parent is 0
- * If k is larger than depth return root.
- * Assumptions: 
-        1-the nodes are ordered from 0-n-1 0 <= parent[i] < n for all 0 < i < n
-        2-the depth of the tree is at most 31 (to do binary lifting)
-*/
-struct TreeAncestor {
+    /*Cracking the coding interview questions (Chapter 8)*/
 
-    vector<vector<int>> up;
-    TreeAncestor(int n, vector<int> parent) {
-        up = vector<vector<int>>(n, vector<int>(31)); //31 can be optimized to actual tree height
-        for (size_t i = 0; i < n; i++)
+    //8.1 Triple jump
+    int waysToReach(int n)
+    {
+        //push dp or pull dp?
+        vector<int> dp(n + 1);
+        dp[0] = 1;
+        for (int i = 0; i < n; i++)
         {
-            up[i][0] = parent[i];
-            for (size_t b = 1; b < 31; b++)
+            for (int j = 1; j <= 3; j++)
             {
-                up[i][b] = up[up[i][b - 1]][b - 1]; //the bth ancestor of the b-1th ancestor (log jumps)
+                if (i + j < dp.size())
+                    dp[i + j] += dp[i];
             }
         }
+        return dp[n];
     }
-
-    //get the kth ancestor of node 
-    int query(int node, int k)
+    //8.2 Robot grid
+    string robotPath(vector<vector<bool>>& grid)
     {
-        //k can be represented as a sum of powers of 2 
-        // 39th ancestor = 36 + 2 + 1 -> get 1st ancestor of the 2nd ancestor of the 36th ancestor of node  
-        for (int b = 30; b >= 0; b--)
+        //assuming start and end are valid points
+        int rows = grid.size();
+        int cols = grid[0].size();
+        vector<vector<bool>> dp(rows + 1, vector<bool>(cols + 1));
+        dp[rows][cols - 1] = true;
+        dp[rows - 1][cols] = true;
+        //robot starts at 0,0 and wants to arrive at r,c
+
+        for (int i = rows - 1; i >= 0; i--)
         {
-            int p = pow(2, b); //can be replaced with bit shifting
-            if (k >= p)
+            for (int j = cols - 1; j >= 0; j--)
             {
-                k -= p;
-                node = up[node][b];
+                if (grid[i][j] == true)
+                {
+                    dp[i][j] = dp[i + 1][j] || dp[i][j + 1];
+                }
+                else
+                    dp[i][j] = false;
             }
         }
-        return node;
-    }
-};
-
-/*Cracking the coding interview questions (Chapter 8)*/
-
-//8.1 Triple jump
-int waysToReach(int n)
-{
-    //push dp or pull dp?
-    vector<int> dp(n + 1);
-    dp[0] = 1;
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 1; j <= 3; j++)
+        int i = 0, j = 0;
+        string path = "";
+        while (i < rows && j < cols)
         {
-            if (i + j < dp.size())
-                dp[i + j] += dp[i];
-        }
-    }
-    return dp[n];
-}
-//8.2 Robot grid
-string robotPath(vector<vector<bool>>& grid)
-{
-    //assuming start and end are valid points
-    int rows = grid.size();
-    int cols = grid[0].size();
-    vector<vector<bool>> dp(rows + 1, vector<bool>(cols + 1));
-    dp[rows][cols - 1] = true;
-    dp[rows - 1][cols] = true;
-    //robot starts at 0,0 and wants to arrive at r,c
-
-    for (int i = rows - 1; i >= 0; i--)
-    {
-        for (int j = cols - 1; j >= 0; j--)
-        {
-            if (grid[i][j] == true)
+            if (dp[i + 1][j])
             {
-                dp[i][j] = dp[i + 1][j] || dp[i][j + 1];
+                path += "D";
+                i++;
             }
             else
-                dp[i][j] = false;
+            {
+                path += "R";
+                j++;
+            }
         }
+        return path;
     }
-    int i = 0, j = 0;
-    string path = "";
-    while (i < rows && j < cols)
+    //8.3 Magic index (don't understand why dp, binary search?)
+    int magicIndex(vector<int>& A)
     {
-        if (dp[i + 1][j])
-        {
-            path += "D";
-            i++;
-        }
-        else
-        {
-            path += "R";
-            j++;
-        }
-    }
-    return path;
-}
-//8.3 Magic index (don't understand why dp, binary search?)
-int magicIndex(vector<int>& A)
-{
-    int low = 0;
-    int high = A.size() - 1;
+        int low = 0;
+        int high = A.size() - 1;
 
-    while (low <= high)
+        while (low <= high)
+        {
+            int mid = low + (high - low) / 2;
+
+            if (A[mid] == mid)
+                return mid;
+            //01234
+            //12344
+            if (A[mid] > mid)
+            {
+                low = mid + 1;
+            }
+            else
+                high = mid - 1;
+        }
+        return -1;
+    }
+
+    //8.4 power set (return subsets of set)
+    void helper(vector<vector<int>>& ans, vector<int>& current, vector<int>& nums, int idx)
     {
-        int mid = low + (high - low) / 2;
+        ans.push_back(current);
 
-        if (A[mid] == mid)
-            return mid;
-        //01234
-        //12344
-        if (A[mid] > mid)
+        for (int i = idx; i < nums.size(); i++)
         {
-            low = mid + 1;
+            current.push_back(nums[i]);
+            helper(ans, current, nums, i + 1);
+            current.pop_back();
         }
-        else
-            high = mid - 1;
     }
-    return -1;
-}
-
-//8.4 power set (return subsets of set)
-void helper(vector<vector<int>>& ans, vector<int>& current, vector<int>& nums, int idx)
-{
-    ans.push_back(current);
-
-    for (int i = idx; i < nums.size(); i++)
+    vector<vector<int>> powerset(vector<int>& nums)
     {
-        current.push_back(nums[i]);
-        helper(ans, current, nums, i + 1);
-        current.pop_back();
+        vector<vector<int>> ans;
+        vector<int> current = {};
+        helper(ans, current, nums, 0);
+        return ans;
     }
-}
-vector<vector<int>> powerset(vector<int>& nums)
-{
-    vector<vector<int>> ans;
-    vector<int> current = {};
-    helper(ans, current, nums, 0);
-    return ans;
-}
 
-//8.5 Recursive multiply
-int recursiveMultiply(int x, int y)
-{
-    if (x > y)
-        swap(x, y);
-    if (x == 1)
-        return y;
-    return recursiveMultiply(x - 1, y) + y;
-}
+    //8.5 Recursive multiply
+    int recursiveMultiply(int x, int y)
+    {
+        if (x > y)
+            swap(x, y);
+        if (x == 1)
+            return y;
+        return recursiveMultiply(x - 1, y) + y;
+    }
 
-//8.6 Towers of hanoi
+    //8.6 Towers of hanoi
 
 
+    //Algorithms 1st Edition by Sanjoy Dasgupta, chapter 6
+    /* 6.1.Maximum sum in a continious substring (Kadane's alg.) */
+    int maxsumcontinuous(vector<int>& arr)
+    {
+        int sum = 0;
+        int maxsum = 0;
+
+        for (int i : arr) {
+            sum += i;
+            sum = max(sum, 0);
+            maxsum = max(sum, maxsum);
+        }
+        return maxsum;
+    }
+
+    /* 6.2 Hotel stops
+    * You are going on a long trip. You start on the road at mile post 0. 
+    * Along the way there are n hotels, at mile posts a1,a2,...an, where each ai is measured from the starting point. 
+    * You can choose which of the hotels you stop at. You must stop at the final hotel (at distance an), which is your destination.
+    * You’d ideally like to travel 200 miles a day, but may not be possible-
+    * If you travel x miles during a day, the penalty for that day is (200 − x)^2
+    * You want to minimize the total penalty over all travel days, of the daily penalties.
+    * Give an efficient algorithm that determines the optimal sequence of hotels at which to stop.
+    */
+    vector<int> optimalstops(const vector<int>& hotels)
+    { 
+        int n = hotels.size();
+        vector<int> dp(n, INT_MAX);
+        dp[0] = 0;
+        vector<int> predecessor(n);
+
+        for (int i = 1; i <n; i++)
+        {
+            for (int j = 0; j < i; j++)
+            {
+                int pen = pow(200 - (hotels[i] - hotels[j]), 2);
+                if (pen + dp[j] < dp[i])
+                {
+                    dp[i] = dp[j] + pen;
+                    predecessor[i] = j;
+                }
+            }
+        }
+        vector<int> path;
+        path.push_back(n-1);
+
+        int prev = predecessor[hotels.size() - 1];
+        while (prev != 0)
+        {
+            path.push_back(prev);
+            prev = predecessor[prev];
+        }
+        reverse(path.begin(), path.end());
+        return path;
+    }
+
+
+
+    /* 6.3
+    *Yuckdonald’s is considering opening a series of restaurants.
+    *The n possible locations are along a straight line
+    *the distances of these locations to the start are in miles and in increasing order, m1, m2,...,mn.
+    *The constraints are as follows: At each location, Yuckdonald’s may open at most one restaurant. 
+    *The expected profit from opening a restaurant at location i is pi, where pi > 0 and i = 1, 2,..., n.
+    *Any two restaurants should be at least k miles apart, where k is a positive integer.
+    Give an efficient algorithm to compute the maximum expected total profit subject to the given
+    constraints.
+    */
+
+    int maxRestaurantProfit(vector<int>& locations, vector<int>& profit, int k)
+    {
+        // dp(i) = maxprofit with restaurant at ith location + max(dp(j), where locations[j]+k < locations[i])
+        int n = locations.size();
+        vector<int> dp(n);
+        int maxprofit = 0;
+        for (int i = 0; i < n; i++)
+        {
+            dp[i] = profit[i];
+            for (int j = 0; j < i; j++)
+            {
+                int dist = locations[i] - locations[j];
+                if (dist >= k)
+                {
+                    dp[i] = max(dp[i], dp[j] + profit[i]);
+                }
+            }
+            maxprofit = max(maxprofit, dp[i]);
+        }
+        return maxprofit;
+    }
+
+ /*6.4
+*You are given a string of n characters s[1...n], which you believe to be a corrupted text document in which all punctuation has vanished ("itwasthebestoftimes").
+*You wish to reconstruct the document using a dictionary, which is available in the form of a
+Boolean function dict(.): for any string w, dict(w) ={ true if w is a valid word, false otherwise}
+*Give a dynamic programming algorithm that determines whether the string s[.] can be
+reconstituted as a sequence of valid words.
+*The running time should be at most O(n^2),
+assuming calls to dict take unit time.
+*Reconstruct solution if valid.
+*/
+
+    string wordbreak(const unordered_set<string>& dict, string s)
+    {
+        //string s is valid if all prefix is valid s[0:j-1] is valid && s[j:] is word
+        vector<bool> dp(s.size());
+        for (int i = 0; i < s.size(); i++)
+        {
+            string substr1 = s.substr(0, i + 1);
+            if (dict.count(substr1))
+                dp[i] = true;
+            
+            for (int j = 0; j < i; j++)
+            {
+                if (dp[j] == true)
+                {
+                    int len = i - (j + 1) + 1;
+                    string substr = s.substr(j + 1, len);
+                    if (dict.count(substr))
+                    {
+                        dp[i] = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        //cats and dogs           dict = cat, cats, and, sand, dog, dogs
+        //FFTT FFT FFTT 
+        //reconstruct solution:
+        vector<string> sol;
+        int end = dp.size();
+        for (int i = dp.size() - 1; i >= 0; i--)
+        {
+            if (dp[i] == true)
+            {
+                //try to break
+                string subs = s.substr(i+1, end - i);
+                if (dict.count(subs))
+                {
+                    sol.push_back(subs);
+                    end = i;
+                }
+            }
+        }
+        string subs = s.substr(0, end+1);
+        if (dict.count(subs))
+            sol.push_back(subs);
+
+        string ans = "";
+        while (!sol.empty())
+        {
+            ans += sol.back();
+            sol.pop_back();
+            if (!sol.empty())
+                ans += " ";
+        }
+        return ans;
+    }
+
+
+    //6.11
+    /*
+    Given two strings x = x1x2...xn and y = y1y2..ym, we wish to find the length of their longest common substring
+    *Show how to do this in time O(mn).*/
+
+    int longestCommonSubstring(string x, string y)
+    {
+        int n = x.size();
+        int m = y.size();
+
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1));
+        int maxlen = 0;
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < m; j++)
+            {
+                if (x[i] == y[j])
+                    dp[i + 1][j + 1] = dp[i][j] + 1;
+                else
+                    dp[i + 1][j + 1] = 0;
+
+                maxlen = max(maxlen, dp[i + 1][j + 1]);
+            }
+        }
+        return maxlen;
+    }
+};

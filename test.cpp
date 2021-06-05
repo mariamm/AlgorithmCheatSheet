@@ -316,3 +316,40 @@ TEST(DynamicProgramming, Knapsack2)
 
     EXPECT_EQ(maxvalue, expectedMaxvalue);
 }
+
+TEST(DynamicProgramming, Hotels_Optimal_Stops)
+{
+    vector<int> hotels = {0, 100, 250, 600, 700, 900};
+
+    vector<int> path = DP::optimalstops(hotels);
+
+    vector<int> opt = {2,3,5};
+    EXPECT_EQ(path, opt);
+}
+
+TEST(DynamicProgramming, Wordbreak_1)
+{
+    unordered_set<string> dict = {"cat", "cats", "and", "sand", "dog", "dogs"};
+    string s = "catsanddogs";
+
+    string ans = DP::wordbreak(dict, s);
+    unordered_set<string> validanswers = { "cats and dogs", "cat sand dogs" };
+
+    EXPECT_EQ(1, validanswers.count(ans));
+}
+TEST(DynamicProgramming, LongestCommonSubstring)
+{
+    vector<vector<string>> tests =
+    {
+        {"abcd", "bcd"},
+        {"abced", "bcd"},
+        {"abc", "xyz"},
+        {"xyabczbcd", "ebcd"}
+    };
+    vector<int> expected_answers = { 3, 2, 0, 3};
+    for (int i=0; i<tests.size(); i++)
+    {
+        int lcss = DP::longestCommonSubstring(tests[i][0], tests[i][1]);
+        EXPECT_EQ(expected_answers[i], lcss);
+    }
+}

@@ -986,3 +986,45 @@ int maximumStartingAtAnyDepth(vector<int> arr)
     }
     return maxsum;
 }
+
+/*
+ * Binary Lifting
+ * Kth Ancestor of a Tree Node
+ * Tree represented as an array of parents, where parent[i] is the parent of node i. The root of the tree is node 0 and its parent is 0
+ * If k is larger than depth return root.
+ * Assumptions:
+        1-the nodes are ordered from 0-n-1 0 <= parent[i] < n for all 0 < i < n
+        2-the depth of the tree is at most 31 (to do binary lifting)
+*/
+struct TreeAncestor {
+
+    vector<vector<int>> up;
+    TreeAncestor(int n, vector<int> parent) {
+        up = vector<vector<int>>(n, vector<int>(31)); //31 can be optimized to actual tree height
+        for (size_t i = 0; i < n; i++)
+        {
+            up[i][0] = parent[i];
+            for (size_t b = 1; b < 31; b++)
+            {
+                up[i][b] = up[up[i][b - 1]][b - 1]; //the bth ancestor of the b-1th ancestor (log jumps)
+            }
+        }
+    }
+
+    //get the kth ancestor of node 
+    int query(int node, int k)
+    {
+        //k can be represented as a sum of powers of 2 
+        // 39th ancestor = 36 + 2 + 1 -> get 1st ancestor of the 2nd ancestor of the 36th ancestor of node  
+        for (int b = 30; b >= 0; b--)
+        {
+            int p = pow(2, b); //can be replaced with bit shifting
+            if (k >= p)
+            {
+                k -= p;
+                node = up[node][b];
+            }
+        }
+        return node;
+    }
+};
