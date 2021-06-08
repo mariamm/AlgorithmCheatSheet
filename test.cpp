@@ -233,6 +233,18 @@ TEST(ShortestPaths, BellmanFord)
 
     EXPECT_EQ(dist, 7); 
 }  
+
+TEST(ShortestPaths, FloydWarshall)
+{
+    vector<vector<int>> adjMatrix = {
+    { 0, 5, 0, 10 },
+    { 0, 0, 3, 0 },
+    { 0, 0, 0, 1 },
+    { 0, 0, 0, 0 } 
+    };
+
+    vector<vector<int>> allpaths = floydWarshallShortestPath(adjMatrix);
+}
 TEST(Graphs, HierHolzerEuelerianPath)
 {
     vector<vector<int>> adjList = {
@@ -256,7 +268,7 @@ TEST(Graphs, HierHolzerEuelerianPath)
 TEST(Geometry, OnDiagonal)
 {
     //board 3x3 
-    /* 
+    /*  ________
        |__|__|__|
        |__|__|__|
        |__|__|__|
@@ -352,4 +364,14 @@ TEST(DynamicProgramming, LongestCommonSubstring)
         int lcss = DP::longestCommonSubstring(tests[i][0], tests[i][1]);
         EXPECT_EQ(expected_answers[i], lcss);
     }
+}
+
+TEST(DynamicProgramming, CoinChangeUnique)
+{
+    vector<int> denom = { 1,5,10,20 }; 
+    EXPECT_TRUE(DP::coinChangePossible2(16, denom));
+    EXPECT_TRUE(DP::coinChangePossible2(36, denom));
+    EXPECT_FALSE(DP::coinChangePossible2(40, denom));
+    vector<int> denom2 = { 19,18,10,5,3,2 };
+    EXPECT_TRUE(DP::coinChangePossible2(20, denom2));
 }

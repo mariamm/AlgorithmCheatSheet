@@ -599,16 +599,16 @@ namespace DP
         return maxprofit;
     }
 
- /*6.4
-*You are given a string of n characters s[1...n], which you believe to be a corrupted text document in which all punctuation has vanished ("itwasthebestoftimes").
-*You wish to reconstruct the document using a dictionary, which is available in the form of a
-Boolean function dict(.): for any string w, dict(w) ={ true if w is a valid word, false otherwise}
-*Give a dynamic programming algorithm that determines whether the string s[.] can be
-reconstituted as a sequence of valid words.
-*The running time should be at most O(n^2),
-assuming calls to dict take unit time.
-*Reconstruct solution if valid.
-*/
+     /*6.4
+    *You are given a string of n characters s[1...n], which you believe to be a corrupted text document in which all punctuation has vanished ("itwasthebestoftimes").
+    *You wish to reconstruct the document using a dictionary, which is available in the form of a
+    Boolean function dict(.): for any string w, dict(w) ={ true if w is a valid word, false otherwise}
+    *Give a dynamic programming algorithm that determines whether the string s[.] can be
+    reconstituted as a sequence of valid words.
+    *The running time should be at most O(n^2),
+    assuming calls to dict take unit time.
+    *Reconstruct solution if valid.
+    */
 
     string wordbreak(const unordered_set<string>& dict, string s)
     {
@@ -694,5 +694,46 @@ assuming calls to dict take unit time.
             }
         }
         return maxlen;
+    }
+
+    //6.17 coin change: is it possible to make change for v using given denominations of coins
+
+    bool coinChangePossible(int v, const vector<int>& denom)
+    {
+        vector<bool> dp(v + 1, false);
+        dp[0] = true;
+
+        for (int i = 1; i <= v; i++)
+        {
+            for (int coin : denom)
+            {
+                if (i >= coin)
+                {
+                    dp[v] = dp[v] || dp[v - coin];
+                }
+            }
+        }
+        return dp[v];
+    }
+
+    //6.18 coin change2: is it possible to make change for v using given denominations of coins, while using a coin at most once!
+
+    bool coinChangePossible2(int v, const vector<int>& denom)
+    {
+        vector<vector<pair<bool, bool>>> dp(denom.size(), vector<pair<bool, bool>>(v + 1));
+        dp[0][0] = make_pair(true, false); //valid for value zero, using no coins
+
+        for (int i = 0; i < denom.size(); i++)
+        {
+            for (int j = 0; j <= v; j++)
+            {
+                int coin = denom[i];
+                if (i > 0)
+                    dp[i][j].first = dp[i - 1][j].first || dp[i - 1][j].second; //valid without ith coin
+                if (j >= coin)
+                    dp[i][j].second = dp[i][j - coin].first && !dp[i][j - coin].second; //valid with ith coin if not already used
+            }
+        }
+        return dp[denom.size() - 1][v].first || dp[denom.size() - 1][v].second;
     }
 };

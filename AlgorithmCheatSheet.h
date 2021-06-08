@@ -540,8 +540,39 @@ int dijkstraShortestPath(const vector<vector<vector<int>>> &adjList, int N)
     } 
     return dist[N-1]; 
 }
+/* Floyd Warshall all paths shortest path
+*/
+vector<vector<int>> floydWarshallShortestPath(vector<vector<int>> adjMatrix)
+{
+    const int INF = 1e7;
+    int v = adjMatrix.size();
+    vector<vector<int>> dist(v, vector<int>(v));
 
-
+    for (int s = 0; s < v; s++) //for all starting points
+    {
+        for (int t = 0; t < v; t++) //for all destination points
+        {
+            if (s == t)
+                continue;
+            if (adjMatrix[s][t] != 0) //there is a direct edge
+                dist[s][t] = adjMatrix[s][t];
+            else 
+                dist[s][t] = INF; 
+        }
+    }
+    for(int i=0; i<v; i++)
+    {
+        for (int s = 0; s < v; s++) //for all starting points
+        {
+            for (int t = 0; t < v; t++) //for all destination points
+            { 
+                if (dist[s][t] > (dist[s][i] + dist[i][t]) && dist[i][t] != INF && dist[s][i] != INF)
+                    dist[s][t] = dist[s][i] + dist[i][t];
+            }
+        }
+    }
+    return dist;
+}
 //Topological sort of a DAG (directed acyclic graph)
 vector<int> kahnsort(vector<vector<int>>& graph)
 {
