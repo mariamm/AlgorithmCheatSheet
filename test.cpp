@@ -307,6 +307,16 @@ TEST(Math, Factorial)
     } 
 }
 
+TEST(Math, TrailingZeros)
+{
+    vector<int> nums = { 4, 6, 25, 75 };
+    vector<int> ans = { 0, 1, 6, 18 };
+    for (int i = 0; i < nums.size(); i++)
+    {
+        auto n = factorialTrailingZeros(nums[i]);
+        EXPECT_EQ(n, ans[i]);
+    }
+}
 TEST(DynamicProgramming, Knapsack1)
 {
     vector<int> weights = { 3,1,3,4,2 };
