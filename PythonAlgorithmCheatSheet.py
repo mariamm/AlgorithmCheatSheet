@@ -154,7 +154,7 @@ print(myvector)
                 
 # NN From Scratch
 
-def create_data(points, classes):
+def spiral_data(points, classes):
     X = np.zeros((points*classes, 2))
     y = np.zeros(points*classes, dtype='uint8')
     
@@ -166,6 +166,10 @@ def create_data(points, classes):
         y[ix] = class_number
     return X, y
     
+import matplotlib.pyplot as plt
+
+plt.scatter(X[:,0], X[:,1], c=y, cmap = "brg")
+plt.show()
 # part 6b Relu activation functions
 
 np.random.seed(0)
@@ -183,3 +187,95 @@ class Activation_ReLU:
     def forward(self, inputs):
         self.output = np.maximum(0, inputs)
     
+    
+X, y = spiral_data(100,3)
+layer1 = Layer_Dense(2,5)
+activation1 = Activation_ReLU()
+layer1.forward(X)
+activation1.forward(layer1.output)
+
+# part 6 Softmax activation = exponentiation + normalization
+
+import math
+
+E = math.e
+layer_output = [4.8, 1.21, 2.385]
+exp.values = []
+
+for output in layer_output:
+    exp_values.append(E**output) # e^output
+    
+norm_base = sum(exp_values)
+norm_values = []
+
+for value in exp_values:
+    norm_values.append(value/norm_base)
+    
+    
+import numpy as np
+
+exp_values = np.exp(layer_outputs)
+norm_values = exp_values / np.sum(exp_values)
+
+# batch
+layer_output = [[4.8, 1.21, 2.385],
+                [8.9, -1.81, 0.2],
+                [1.41, 1.051, 0.026]]
+                
+exp_values = np.exp(layer_outputs)
+
+# sum the rows
+norm_values = exp_values / np.sum(layer_outputs, axis=1, keepdims = True)
+
+# problem of overflow (solution: subtract the max value)
+
+class Activation_Softmax:
+    def forward(self, inputs): 
+        exp_values = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
+        self.output = exp_values / np.sum(self, inputs, axis=1, keepdims=True)
+
+#example
+
+X, y = spiral_data(samples = 100, classes = 3)
+
+dense1 = Layer_Dense(2,3) # 2 input x,y, 3 neurons
+activation1 = Activation_ReLU()
+
+dense2 = Layer_Dense(3,3) # 3 output of previous, 3 classes 
+activation2 = Activation_Softmax()
+
+dense1.forward(X)
+activation1.forward(dense1.output)
+dense2.forward(activation1.output)
+activation2.forward(dense2.output)
+
+''' part 7&8 loss function (metric, how wrong is the model we are training)
+Examples:
+ -mean absolute error |.| 
+ -categorical cross-entropy Li=-log(y_i, k)
+ 
+ One-hot encoding: 
+ vector of the size of all classes, 0 for wrong classes, 1 for intended class
+ 
+ log -> solving for x in e**x = b
+ log(b) = x
+'''
+
+#L = -(1*log(y1) + 0*log(y2) + 0*log(y3))
+
+softmax_output = [0.7, 0.1, 0.2]
+target_class = 0
+target_output = [1,0,0] # one hot encoding
+loss = 0
+for i in softmax_output:
+    loss = max(0, -(math.log(i)))
+    
+#batch
+
+softmax_output =np.array( [[0.7, 0.1, 0.2],
+                          [0.1, 0.5, 0.4],
+                          [0.02, 0.9, 0.08]])
+                  
+class_target = [0,1,1]
+# print(softmax_outputs[[0,1,2], [class_targets]) --> [0.7, 0.5, 0.9]
+

@@ -573,7 +573,9 @@ vector<vector<int>> floydWarshallShortestPath(vector<vector<int>> adjMatrix)
     }
     return dist;
 }
-//Topological sort of a DAG (directed acyclic graph)
+/*Topological sort of a DAG(directed acyclic graph)
+* Time & space complexity: O(V+E)
+* /
 vector<int> kahnsort(vector<vector<int>>& graph)
 {
     vector<int> indegree(graph.size());
