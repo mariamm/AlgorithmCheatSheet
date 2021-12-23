@@ -295,3 +295,194 @@ void permute(vector<int>& nums, vector<vector<int>>& result)
         result.push_back(nums);
     } while (next_permutation(nums.begin(), nums.end()));
 }
+
+namespace flipMatrix
+{
+    /*
+    vector<vector<int>> matrix1_true = {{0,0,1,0,0},
+                                        {0,0,1,0,0},
+                                        {1,1,0,1,1},
+                                        {0,0,1,0,0}};
+
+    vector<vector<int>> matrix2_false = {{0,0,1,0,0},
+                                        {0,0,1,0,0},
+                                        {1,1,1,1,1},
+                                        {0,0,1,0,0} };
+
+    vector<vector<int>> matrix3_false= { {0,1},{1,1} };
+    
+    */
+    static int colcount = 0;
+    static int rowcount = 0;
+    bool checkMatrix(vector<vector<int>>& input)
+    { 
+        for (int i = 0; i < input.size(); i++)
+        {
+            for (int j = 0; j < input[0].size(); j++)
+            {
+                if (input[i][j] == 1)
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    void flipCol(vector<vector<int>>& input, int col)
+    {
+        for (int r = 0; r < input.size(); r++)
+            input[r][col] = !input[r][col];
+    }
+    void flipRow(vector<vector<int>>& input, int row)
+    {
+        for (int c = 0; c < input[0].size(); c++)
+        {
+            input[row][c] = !input[row][c];
+        }
+    }
+    bool helperCol(vector<vector<int>>& input, int col)
+    {
+        if (col >= input[0].size())
+            return false;
+
+        colcount++;
+        for (int c = col; c < input[0].size(); c++)
+        {
+            //flipCol(input, c);
+            //if (checkMatrix(input))
+            //    return true;
+            helperCol(input, c + 1);
+            //flipCol(input, c);
+        }
+        return false;
+    }
+    bool helperRow(vector<vector<int>>& input, int row)
+    {
+        if (row >= input.size())
+            return false;
+
+        rowcount++;
+        for (int i = row; i < input.size(); i++)
+        {
+            //flipRow(input, row);
+            //if (checkMatrix(input))
+            //    return true;
+            for (int j = 0; j < input[0].size(); j++)
+            {
+                helperCol(input, j);
+
+            }
+            helperRow(input, i + 1);
+            //flipRow(input, row);
+        }
+        return false;
+    }
+}
+
+namespace solveEquation
+{
+    /*
+        https://leetcode.com/discuss/interview-question/1591801/Google-or-OA-or-Solve-Equations
+        Given a function which takes a list of strings which are equations and a variable.
+        Find the value of the variable if there's no cycle, else print "Cycle Detected"
+        equations = ["A=1", "B=2", "C=E", "D=B", "E=A"]
+        Find C. Answer is 1
+        equations = ["A=1", "B=2", "C=E+2", "D=A-6", "E=A"]
+        Find C. Answer is 3
+        equations = ["A=1", "B=2", "C=A+B", "D=E", "E=D"]
+        Find D. Answer is "Cycle Detected"
+    */
+
+    unordered_map<int, int> values;
+    unordered_map<int, int> finalvalues;
+    unordered_set<int> visited; 
+    unordered_map<char, int> chartoint; //give variables an index
+
+    bool dfs(vector<vector<pair<int,int>>>& adjlist, int v)
+    {
+        for (auto n : adjlist[v])
+        {
+            if (visited.find(n.first) == visited.end())
+            {
+                visited.insert(n.first);
+                if (!dfs(adjlist, n.first))
+                    return false;
+            }
+            if (finalvalues.find(n.first) == finalvalues.end())
+                return false;
+
+            values[v] += (finalvalues[n.first]*n.second);
+        }
+        finalvalues[v] = values[v];
+    }
+    int solveEquation(vector<string> eqs, char variable)
+    {
+        int n = eqs.size(); 
+        int idx = 0;
+        for (string e : eqs)
+            chartoint[e[0]] = idx++;
+
+        vector<vector<pair<int,int>>> adjlist(n);
+        //build graph
+        for (string e : eqs)
+        {
+            //parse equation
+            int v = chartoint[e[0]]; 
+
+            int number = 0;
+            int sign = 1;
+            for (int i = 2; i < e.size(); i++)
+            {
+                if (e[i] == '-' || e[i] == '+')
+                {
+                    sign = e[i] == '+' ? 1 : -1;
+                    values[v] += (number*sign);
+                    number = 0; 
+                }
+                else if (isdigit(e[i]))
+                {
+                    number *= 10;
+                    number += (e[i] - '0');
+                }
+                else
+                {
+                    int n = chartoint[e[i]];
+                    adjlist[v].emplace_back(n, sign);
+
+                }
+            }
+            values[v] += (number * sign);
+            number = 0;
+        }
+
+        if (!dfs(adjlist, chartoint[variable]))
+        {
+            cout << "cycle detected";
+            return -1;
+        }
+        return finalvalues[chartoint[variable]];
+    }
+
+    void clear_all()
+    {
+        visited.clear();
+        finalvalues.clear();
+        chartoint.clear();
+        values.clear();
+    }
+    void test_cases()
+    {
+        //Find C.Answer is 1
+        vector<string> equations1 = { "A=1", "B=2", "C=E", "D=B", "E=A" };
+        clear_all();
+        cout << solveEquation(equations1, 'C') << " Answer 1" << endl;
+        //Find C.Answer is 3
+        vector<string> equations2 = { "A=1", "B=2", "C=E+2", "D=A-6", "E=A" };
+        clear_all();
+        cout << solveEquation(equations2, 'C') << " Answer 3"<<endl;
+        //Find D.Answer is "Cycle Detected"
+        vector<string> equations3 = { "A=1", "B=2", "C=A+B", "D=E", "E=D" };
+        clear_all();
+        cout << solveEquation(equations3, 'D') << " Answer -1" << endl;
+    }
+}
+ 

@@ -11,12 +11,13 @@
 #include <list>
 #include <cassert>
 #include <algorithm>
+#include <sstream>
 
 using namespace std;
 
 //C++ 11 : lambdas, auto type, list initialization, smart pointers, move semantics, range for loops
-//C++ 14 : return type deduction, binary lieterals, generic lambdas decle types
-//C++ 17 : structured binding, nested namesapces, inline variables, constexpr lamdas
+//C++ 14 : return type deduction (auto functions), binary lieterals (0b), generic lambdas decltypes
+//C++ 17 : structured binding (auto [x,y] = a), nested namesapces, inline variables, constexpr lamdas
 //C++ 20 : 
 
 ///////////////////////////////////////////////

@@ -514,7 +514,6 @@ int dijkstraShortestPath(const vector<vector<vector<int>>> &adjList, int N)
     // Add start to priority queue (minheap of vertices distances)
     // Visit every vertex in the pq, skip if visited already (has shorter distance in distance array)
     // Update distance to neighbors and add them to pq
-    // Then, for every edge find negative cycle to discard result
     assert(adjList.size() == N && "Adjacency List must equal vertices N");
     vector<int> dist(N, INT_MAX);
     //using priority queue in lazy implementation
@@ -575,7 +574,7 @@ vector<vector<int>> floydWarshallShortestPath(vector<vector<int>> adjMatrix)
 }
 /*Topological sort of a DAG(directed acyclic graph)
 * Time & space complexity: O(V+E)
-* /
+*/
 vector<int> kahnsort(vector<vector<int>>& graph)
 {
     vector<int> indegree(graph.size());
