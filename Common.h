@@ -21,30 +21,6 @@ using namespace std;
 //C++ 20 : 
 
 ///////////////////////////////////////////////
-/////// Pretty Print //////////////////////////
-///////////////////////////////////////////////
-
-void print2dVector(vector<vector<int>>& input)
-{
-    for (vector<int> v : input)
-    {
-        for (int i : v)
-            cout << i << ", ";
-        cout << endl;
-    }
-    cout << "----------------------"<<endl;
-}
-
-void printVector(vector<int>& input)
-{
-    for (int i : input)
-    {
-        cout << i << ", ";
-    }
-}
-
-
-///////////////////////////////////////////////
 /////// Custom Data Structures ////////////////
 ///////////////////////////////////////////////
 struct ListNode
@@ -86,10 +62,145 @@ struct TreeNode
     }
 };
 
+struct BST
+{
+    struct BSTNode
+    {
+        int val;
+        BSTNode* left;
+        BSTNode* right;
+        int height;
+
+        BSTNode()
+        {
+            left = nullptr;
+            right = nullptr;
+            val = 0;
+            height = 1;
+        }
+        BSTNode(int v)
+        {
+            left = nullptr;
+            right = nullptr;
+            val = v;
+            height = 1;
+        }
+    };
+
+    BSTNode* root;
+    BST()
+    {
+        root = nullptr;
+    }
+    BST(int v)
+    {
+        root = new BSTNode(v);
+    }
+    BST(vector<int>& values)
+    {
+        if (values.empty())
+        {
+            BST();
+            return;
+        }
+        root = new BSTNode(values[0]);
+        for (int i = 1; i < values.size(); i++)
+        {
+            insert(root, values[i]);
+        }
+    }
+    BSTNode* insert(BSTNode* curr, int v)
+    {
+        if (curr == nullptr) {
+            return new BSTNode(v);
+        }
+        //insert normally
+        if (curr->val < v)
+        {
+            curr->right = insert(curr->right, v);
+            curr->right->height++;
+        }
+        else
+        {
+            curr->left = insert(curr->left, v);
+            curr->left->height++;
+        }
+        
+        //check and fix balance 
+        int balance = getBalance(curr);
+        /* insert "2"                   
+               5            5           0               1   
+             3            1              1                3
+           2                2             2             2
+           LL imbalance  LR imbalance   RR imbalance    RL imbalance
+        */
+        if (balance > 1)
+        { 
+            if(curr->left && curr->left->val > v)//LL imbalance
+                rotateRight(curr);
+            else//LR imbalance
+            { 
+                rotateRight(curr);
+                rotateLeft(curr);
+            }
+        }
+        else if (balance < -1)
+        {
+            if (curr->right && curr->right->val < v)//RR imbalance
+                rotateLeft(curr);
+            else//RL imbalance
+            {
+                rotateLeft(curr);
+                rotateRight(curr);
+            }
+
+        }
+        return curr;
+    }
+    void rotateLeft(BSTNode* curr)
+    {
+        BSTNode* temp = curr->right;
+        curr->right = nullptr;
+        curr->height = 1 + getHeight(curr->left);
+        temp->left = curr;
+        curr = temp;
+        //fix the height
+        curr->height = 1 + max(getHeight(curr->left), getHeight(curr->right));
+
+    }
+    void rotateRight(BSTNode* curr)
+    {
+        BSTNode* temp = curr->left;
+        curr->left = nullptr;
+        curr->height = 1 + getHeight(curr->right);
+        temp->right = curr;
+        curr = temp;
+        //fix the height
+        curr->height = 1 + max(getHeight(curr->left), getHeight(curr->right));
+    }
+    int getBalance(BSTNode *curr)
+    {
+        return getHeight(curr->left) - getHeight(curr->right);
+    }
+    int getHeight(BSTNode* curr)
+    {
+        if (curr == nullptr)
+            return 0;
+        return curr->height;
+    }
+    void inorderTraversal(BSTNode* node, vector<int>& arr)
+    {
+        if (node == nullptr)
+            return;
+        inorderTraversal(node->left, arr);
+        arr.push_back(node->val);
+        inorderTraversal(node->right, arr);
+    } 
+};
 struct LinkedList
 {
     ListNode* head;  //front
-    ListNode* tail;     //back
+    ListNode* tail;  //back
 
     ~LinkedList() { /* delete nodes from head to end, NULL ptr*/ }
     LinkedList() { head = NULL; tail = NULL; }
@@ -407,4 +518,28 @@ TreeNode* createTree(const vector<int>& v)
         }
     } 
     return root;
+}
+
+
+///////////////////////////////////////////////
+/////// Pretty Print //////////////////////////
+///////////////////////////////////////////////
+
+void print2dVector(vector<vector<int>>& input)
+{
+    for (vector<int> v : input)
+    {
+        for (int i : v)
+            cout << i << ", ";
+        cout << endl;
+    }
+    cout << "----------------------" << endl;
+}
+
+void printVector(vector<int>& input)
+{
+    for (int i : input)
+    {
+        cout << i << ", ";
+    }
 }
