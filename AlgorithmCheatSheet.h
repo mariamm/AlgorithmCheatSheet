@@ -916,7 +916,7 @@ unsigned long long int factorial(int n, int start = 1)
 long long nCk(int n, int k)
 {
     if (k<0 || k>n) return 0;
-    long long numerator = factorial(n, n - k);
+    long long numerator = factorial(n, n - k + 1);
     long long denominator = factorial(k);
     return numerator / denominator;
 }
@@ -934,6 +934,11 @@ int factorialTrailingZeros(int n)
         n /= 5;
     }
     return count;
+}
+// n choose k recursive
+long long nck_recursive(long long n, long long k){
+    if (k == 0) return 1;
+    return (n * nck_recursive(n - 1, k - 1)) / k ; 
 }
 
 ////////////////////////////////////////////
